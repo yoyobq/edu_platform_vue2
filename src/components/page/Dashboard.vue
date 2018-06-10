@@ -9,11 +9,11 @@
                                 <img src="static/img/img.jpg" class="user-avator" alt="">
                                 <div class="user-info-cont">
                                     <div class="user-info-name">{{name}}</div>
-                                    <div>{{role}}</div>
+                                    <div>{{className}}</div>
                                 </div>
                             </div>
-                            <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div>
-                            <!-- <div class="user-info-list">上次登录地点：<span>东莞</span></div> -->
+                            <div class="user-info-list">上次登录时间：<span>{{new Date(lastLoginTime).toLocaleString()}}</span></div>
+                            <div class="user-info-list">上次登录地点：<span>{{lastLoginIP}}</span></div>
                         </el-card>
                         <!-- <el-card shadow="hover">
                             <div slot="header" class="clearfix">
@@ -68,32 +68,51 @@
                     </el-col>
                 </el-row> -->
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
-                    <div slot="header" class="clearfix">
+                    <div slot="header" class="clearfix">                      
                         <span>待办事项</span>
-                        <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
+                        <!-- <el-button style="float: right; padding: 3px 0" type="text">添加</el-button> -->
                     </div>
-                    <el-table :data="todoList" :show-header="false" height="304" style="width: 100%;font-size:14px;">
+                    <el-table :data="eventList" :show-header="false" height="304" style="width: 100%;font-size:14px;" empty-text="幸苦了，你已经完成了所有任务，请明天再来看看">
                         <el-table-column width="40">
                             <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.status"></el-checkbox>
+                                <el-checkbox></el-checkbox>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="400">
+                            <template slot-scope="scope" >
+                                <div  class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.exam_title}}</div>
                             </template>
                         </el-table-column>
                         <el-table-column>
-                            <template slot-scope="scope">
-                                <div class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.title}}</div>
-                            </template>
+                          <template slot-scope="scope">
+                            <div v-if = "scope.row.exam_status === 0">
+                              <el-tag size="mini">未开始</el-tag>
+                            </div>
+                            <div v-else-if = "scope.row.exam_status === 1">
+                              <el-tag size="mini" type="warning" >进行中</el-tag>
+                            </div>
+                            <div v-else>
+                              <el-tag size="mini" type="info" >已结束</el-tag>
+                            </div>
+                          </template>
                         </el-table-column>
-                        <el-table-column width="60">
+                        <el-table-column>
                             <template slot-scope="scope">
-                                <i class="el-icon-edit"></i>
-                                <i class="el-icon-delete"></i>
+                              <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">进入考试</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                 </el-card>
-
             </el-col>
         </el-row>
+      <el-dialog title="考试信息" :visible.sync="dialogTableVisible">
+        <div class = "exam-info">
+          <p>{{ event.exam_title }}</p>
+          <p>题型：{{ questInfo.type }}，</p>
+          <p>共：{{ questInfo.num }} 道，</p>
+          <p>每题记 {{ questInfo.score }} 分。</p>
+        </div>
+      </el-dialog>
     </div>
 </template>
 
@@ -103,36 +122,58 @@
       data () {
         return {
           name: localStorage.getItem('pf_realName'),
-          todoList: [
-            {
-              title: '今天要修复100个bug',
-              status: false
-            },
-            // {
-            //     title: '今天要修复100个bug',
-            //     status: false,
-            // },
-            // {
-            //     title: '今天要写100行代码加几个bug吧',
-            //     status: false,
-            // }, {
-            //     title: '今天要修复100个bug',
-            //     status: false,
-            // },
-            // {
-            //     title: '今天要修复100个bug',
-            //     status: true,
-            // },
-            {
-              title: '今天要写100行代码加几个bug吧',
-              status: true
-            }
-          ]
+          // localStorage.getItem('pf_username')
+          classId: localStorage.getItem('pf_classId'),
+          className: localStorage.getItem('pf_className'),
+          lastLoginTime: localStorage.getItem('pf_lastLoginTime'),
+          lastLoginIP: localStorage.getItem('pf_lastLoginIP'),
+          eventList: [],
+          event: {},
+          questInfo: {},
+          dialogTableVisible: false,
+          id: this.$session.get('id')
+        }
+      },
+      created () {
+        this.getExamList()
+      },
+      methods: {
+        createRecord () {
+          let data = {
+            '_csrf': this.$cookies.get('csrfToken'),
+            gid: parseInt(this.questInfo.gid),
+            num: parseInt(this.questInfo.num),
+            score: parseInt(this.questInfo.score),
+            id: parseInt(this.id),
+            examId: parseInt(this.event.exam_id)
+          }
+          // console.log(data)
+          this.$api.post('api/v1/examRecords', data, res => {
+            console.log(res)
+          }, rest => {})
+        },
+        getExamList () {
+          // 根据班级获取考试
+          // let data = {
+          //   // '_csrf': this.$cookies.get('csrfToken')
+          // }
+          this.$api.get('api/v1/classes/' + this.classId + '/examLists', null, res => {
+            this.eventList = res
+            // console.log(res)
+          }, rest => {})
+        },
+        handleEdit (index, row) {
+          // console.log(index)
+          this.event = row
+          this.questInfo = JSON.parse(this.event.exam_questInfo)
+          this.questInfo.type = '选择题'
+          this.createRecord()
+          this.dialogTableVisible = true
         }
       },
       computed: {
         role () {
-          return this.name === 'admin' ? '超级管理员' : '普通用户'
+          return this.name === '卜强' ? '超级管理员' : '普通用户'
         }
       }
     }
@@ -228,7 +269,7 @@
     }
 
     .user-info-list span {
-        margin-left: 70px;
+        margin-left: 30px;
     }
 
     .mgb20 {
@@ -242,6 +283,12 @@
     .todo-item-del {
         text-decoration: line-through;
         color: #999;
+    }
+
+    .exam-info {
+      font-size: 16px;
+      font-weight: 500;
+      padding-left: 30px;
     }
 
 </style>

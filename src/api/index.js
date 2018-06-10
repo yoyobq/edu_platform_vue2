@@ -55,7 +55,10 @@ function apiAxios (method, url, params, success, failure) {
     .catch((error) => {
       let res = error.response
       if (res && res.status !== 504) {
-        failure(res.data.detail.message)
+        // console.log(error.response)
+        if (res.data.detail.message) {
+          failure(res.data.detail.message)
+        }
       } else {
         failure('连接超时，请稍待片刻或联系网站管理员')
       }

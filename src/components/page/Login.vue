@@ -66,11 +66,13 @@ export default {
               '_csrf': this.$cookies.get('csrfToken')
             }
             this.$api.put('api/v1/accounts/' + id, data, res => {
-              console.log(res)
+              // console.log(res)
               this.$api.get('api/v1/accounts/' + id, null, res => {
                 // {id: 1, realName: "卜强", accClassId: 3170103, accClassName: "信息1703", lastLoginTime: null,…}
                 localStorage.setItem('pf_username', this.loginForm.username)
                 localStorage.setItem('pf_realName', res.realName)
+                localStorage.setItem('pf_classId', res.accClassId)
+                localStorage.setItem('pf_className', res.accClassName)
                 localStorage.setItem('pf_lastLoginTime', res.lastLoginTime)
                 localStorage.setItem('pf_lastLoginIP', res.lastLoginIP)
                 this.$router.push('/')
