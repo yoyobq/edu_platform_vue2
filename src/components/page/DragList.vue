@@ -49,61 +49,60 @@
 <script>
     import draggable from 'vuedraggable'
     export default {
-        name: 'draglist',
-        data() {
-            return {
-                dragOptions:{
-                    animation: 120,
-                    scroll: true,
-                    group: 'sortlist',
-                    ghostClass: 'ghost-style'
-                },
-                todo: [
-                    {
-                        content: '开发图表组件'
-                    },
-                    {
-                        content: '开发拖拽组件'
-                    },
-                    {
-                        content: '开发权限测试组件'
-                    }
-                ],
-                doing: [
-                    {
-                        content: '开发登录注册页面'
-                    },
-                    {
-                        content: '开发头部组件'
-                    },
-                    {
-                        content: '开发表格相关组件'
-                    },
-                    {
-                        content: '开发表单相关组件'
-                    }
-                ],
-                done:[
-                    {
-                        content: '初始化项目，生成工程目录，完成相关配置'
-                    },
-                    {
-                        content: '开发项目整体框架'
-                    }
-                ]
+      name: 'draglist',
+      data () {
+        return {
+          dragOptions: {
+            animation: 120,
+            scroll: true,
+            group: 'sortlist',
+            ghostClass: 'ghost-style'
+          },
+          todo: [
+            {
+              content: '开发图表组件'
+            },
+            {
+              content: '开发拖拽组件'
+            },
+            {
+              content: '开发权限测试组件'
             }
-        },
-        components:{
-            draggable
-        },
-        methods: {
-            removeHandle(event){
-                console.log(event);
-                this.$message.success(`从 ${event.from.id} 移动到 ${event.to.id} `);
+          ],
+          doing: [
+            {
+              content: '开发登录注册页面'
+            },
+            {
+              content: '开发头部组件'
+            },
+            {
+              content: '开发表格相关组件'
+            },
+            {
+              content: '开发表单相关组件'
             }
+          ],
+          done: [
+            {
+              content: '初始化项目，生成工程目录，完成相关配置'
+            },
+            {
+              content: '开发项目整体框架'
+            }
+          ]
         }
+      },
+      components: {
+        draggable
+      },
+      methods: {
+        removeHandle (event) {
+          console.log(event)
+          this.$message.success(`从 ${event.from.id} 移动到 ${event.to.id} `)
+        }
+      }
     }
-
 </script>
 
 <style scoped>

@@ -13,9 +13,9 @@
                                 </div>
                             </div>
                             <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div>
-                            <div class="user-info-list">上次登录地点：<span>东莞</span></div>
+                            <!-- <div class="user-info-list">上次登录地点：<span>东莞</span></div> -->
                         </el-card>
-                        <el-card shadow="hover">
+                        <!-- <el-card shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>语言详情</span>
                             </div>
@@ -27,12 +27,12 @@
                             <el-progress :percentage="11.9"></el-progress>
                             HTML
                             <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
-                        </el-card>
+                        </el-card> -->
                     </el-col>
                 </el-row>
             </el-col>
             <el-col :span="16">
-                <el-row :gutter="20" class="mgb20">
+                <!-- <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-1">
@@ -66,7 +66,7 @@
                             </div>
                         </el-card>
                     </el-col>
-                </el-row>
+                </el-row> -->
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
                         <span>待办事项</span>
@@ -99,44 +99,43 @@
 
 <script>
     export default {
-        name: 'dashboard',
-        data() {
-            return {
-                name: localStorage.getItem('ms_username'),
-                todoList: [
-                    {
-                        title: '今天要修复100个bug',
-                        status: false,
-                    },
-                    {
-                        title: '今天要修复100个bug',
-                        status: false,
-                    },
-                    {
-                        title: '今天要写100行代码加几个bug吧',
-                        status: false,
-                    }, {
-                        title: '今天要修复100个bug',
-                        status: false,
-                    },
-                    {
-                        title: '今天要修复100个bug',
-                        status: true,
-                    },
-                    {
-                        title: '今天要写100行代码加几个bug吧',
-                        status: true,
-                    }
-                ]
+      name: 'dashboard',
+      data () {
+        return {
+          name: localStorage.getItem('pf_realName'),
+          todoList: [
+            {
+              title: '今天要修复100个bug',
+              status: false
+            },
+            // {
+            //     title: '今天要修复100个bug',
+            //     status: false,
+            // },
+            // {
+            //     title: '今天要写100行代码加几个bug吧',
+            //     status: false,
+            // }, {
+            //     title: '今天要修复100个bug',
+            //     status: false,
+            // },
+            // {
+            //     title: '今天要修复100个bug',
+            //     status: true,
+            // },
+            {
+              title: '今天要写100行代码加几个bug吧',
+              status: true
             }
-        },
-        computed: {
-            role() {
-                return this.name === 'admin' ? '超级管理员' : '普通用户';
-            }
+          ]
         }
+      },
+      computed: {
+        role () {
+          return this.name === 'admin' ? '超级管理员' : '普通用户'
+        }
+      }
     }
-
 </script>
 
 

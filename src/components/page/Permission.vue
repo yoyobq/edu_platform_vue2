@@ -16,9 +16,9 @@
 
 <script>
     export default {
-        data: function(){
-            return {}
-        }
+      data: function () {
+        return {}
+      }
     }
 </script>
 
