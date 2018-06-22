@@ -7,7 +7,6 @@ import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 // import '../static/css/theme-green/index.css'; // 浅绿色主题
 import 'font-awesome/css/font-awesome.css'
 // import 'babel-polyfill' // ie8兼容
-
 import VueSession from 'vue-session'
 import api from './api/index.js'
 import VueCookies from 'vue-cookies'

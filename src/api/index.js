@@ -53,6 +53,7 @@ function apiAxios (method, url, params, success, failure) {
       success(res.data)
     })
     .catch((error) => {
+      console.log(error)
       let res = error.response
       if (res && res.status !== 504) {
         // console.log(error.response)

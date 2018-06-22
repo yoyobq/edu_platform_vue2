@@ -1,10 +1,15 @@
 {
   "common": {
+    "loginPage": {
+      "formTitle": "SSTS 平台登录",
+      "tabsAccount": "帐号登录",
+      "tabsEmail": "邮箱登录",
+      "password": "密码",
+      "email": "电子邮件",
+      "btnLogin": "登录"
+    },
     "home": "Home",
     "login": "登录",
-    "loginPage": {
-      "password": "密码测试"
-    },
     "register": "Register",
     "appDownload": "APP Download",
     "aboutUs": "About Us",
@@ -19,8 +24,15 @@
     "firstPage": "Home",
     "setting": "Setting",
     "exit": "Exit"
-  },  
+  },
   "message": {
+    "loginPage": {
+      "inputMail": "请输入电子邮件地址",
+      "validMail": "输入的邮件地址无效",
+      "inputName": "请输入用户名",
+      "inputPassword": "请输入密码",
+      "notFound": "账户名不存在或密码错"
+    },
     "hint1": "Please Input Nickname",
     "hint2": "Please Input Username",
     "hint3": "Please Input Password",
