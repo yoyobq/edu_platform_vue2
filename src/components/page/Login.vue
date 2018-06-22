@@ -2,18 +2,36 @@
   <div class="login-wrap">
     <div class="ms-title">SSTS 教学平台</div>
     <div class="ms-login">
-      <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="0px" class="demo-loginForm">
-        <el-form-item prop="username">
-          <el-input v-model="loginForm.username" prefix-icon="fa fa-user" placeholder="用户名"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input type="password" prefix-icon="fa fa-lock" placeholder="密码" v-model="loginForm.password" @keyup.enter.native="submitForm('loginForm')"></el-input>
-        </el-form-item>
-        <div class="login-btn">
-          <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-        </div>
-        <!-- <p style="font-size:12px;line-height:30px;color:#999;">没有账号？请先注册</p> -->
-      </el-form>
+      <el-tabs class="ms-form" v-model="activeName" @tab-click="handleClick" >
+        <el-tab-pane label="账户登录" name="first">
+          <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="0px">
+            <el-form-item prop="username">
+              <el-input v-model="loginForm.username" prefix-icon="fa fa-user" placeholder="用户名"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input type="password" prefix-icon="fa fa-lock" :placeholder="$t('common.loginPage.password')" v-model="loginForm.password" @keyup.enter.native="submitForm('loginForm')"></el-input>
+            </el-form-item>
+            <div class="login-btn">
+              <el-button type="primary" @click="submitForm('loginForm')">{{$t('common.login')}}</el-button>
+            </div>
+            <p style="font-size:12px;line-height:30px;color:#999;">没有账号？请先注册</p>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="邮箱登录" name="second">
+          <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="0px">
+            <el-form-item prop="username">
+              <el-input v-model="loginForm.username" prefix-icon="fa fa-user" placeholder="用户名"></el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input type="password" prefix-icon="fa fa-lock" placeholder="密码" v-model="loginForm.password" @keyup.enter.native="submitForm('loginForm')"></el-input>
+            </el-form-item>
+            <div class="login-btn">
+              <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
+            </div>
+            <p style="font-size:12px;line-height:30px;color:#999;">没有邮箱账号？请先注册</p>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -117,9 +135,13 @@ export default {
     width:300px;
     height:160px;
     margin:-150px 0 0 -190px;
-    padding:40px;
+    padding: 15px 40px 75px 40px;
     border-radius: 5px;
     background: #fff;
+}
+
+.ms-form {
+    /* padding:0px 0px 0px 0px; */
 }
 .login-btn{
     text-align: center;

@@ -75,7 +75,13 @@ export default new Router({
     },
     {
       path: '/login',
-      component: resolve => require(['../components/page/Login.vue'], resolve)
+      component: resolve => require(['../components/page/Login.vue'], resolve),
+      meta: { allowBack: false }
+    },
+    {
+      path: '/examine',
+      component: resolve => require(['../components/page/Examine.vue'], resolve),
+      meta: { allowBack: false }
     },
     {
       path: '/404',

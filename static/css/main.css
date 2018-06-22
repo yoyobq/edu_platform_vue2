@@ -11,6 +11,9 @@ body,
     height: 100%;
     overflow: hidden;
 }
+#app {
+  overflow: scroll;
+} 
 
 body {
     font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;

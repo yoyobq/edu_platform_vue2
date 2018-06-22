@@ -28,7 +28,7 @@ import bus from '../common/bus'
 export default {
   data () {
     return {
-      collapse: true,
+      collapse: false,
       items: [
         {
           icon: 'el-icon-setting',

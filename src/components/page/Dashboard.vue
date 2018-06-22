@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dash-main">
         <el-row :gutter="20">
             <el-col :span="8">
                 <el-row>
@@ -68,7 +68,7 @@
                     </el-col>
                 </el-row> -->
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
-                    <div slot="header" class="clearfix">                      
+                    <div slot="header" class="clearfix">
                         <span>待办事项</span>
                         <!-- <el-button style="float: right; padding: 3px 0" type="text">添加</el-button> -->
                     </div>
@@ -84,7 +84,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column>
-                          <template slot-scope="scope">
+                          <!-- <template slot-scope="scope">
                             <div v-if = "scope.row.exam_status === 0">
                               <el-tag size="mini">未开始</el-tag>
                             </div>
@@ -94,7 +94,7 @@
                             <div v-else>
                               <el-tag size="mini" type="info" >已结束</el-tag>
                             </div>
-                          </template>
+                          </template> -->
                         </el-table-column>
                         <el-table-column>
                             <template slot-scope="scope">
@@ -103,6 +103,7 @@
                         </el-table-column>
                     </el-table>
                 </el-card>
+                
             </el-col>
         </el-row>
       <el-dialog title="考试信息" :visible.sync="dialogTableVisible">
@@ -111,6 +112,8 @@
           <p>题型：{{ questInfo.type }}，</p>
           <p>共：{{ questInfo.num }} 道，</p>
           <p>每题记 {{ questInfo.score }} 分。</p>
+          <p v-if = "score !== null ">得分：{{ score }}</p>
+          <el-button :disabled="isExamEnd" type="success" size="mini" @click= "handelStart()">{{ isExamEnd ? '您已交卷' : (isExamStart ? '继续考试' : '开始考试') }}</el-button>
         </div>
       </el-dialog>
     </div>
@@ -131,7 +134,10 @@
           event: {},
           questInfo: {},
           dialogTableVisible: false,
-          id: this.$session.get('id')
+          id: this.$session.get('id'),
+          isExamStart: false,
+          isExamEnd: false,
+          score: null
         }
       },
       created () {
@@ -139,18 +145,48 @@
       },
       methods: {
         createRecord () {
-          let data = {
-            '_csrf': this.$cookies.get('csrfToken'),
-            gid: parseInt(this.questInfo.gid),
-            num: parseInt(this.questInfo.num),
-            score: parseInt(this.questInfo.score),
-            id: parseInt(this.id),
-            examId: parseInt(this.event.exam_id)
-          }
+          // 在scorelist中寻找对应考题
+          this.$api.get('api/v1/accounts/' + this.id + '/scoreLists/' + this.event.exam_id, null,
+            res => {
+              // 如果可以找到,判断是否已经交卷
+              if (res.sco_SubmitTime === null) {
+                // 未交卷
+                this.$session.set('examid', this.event.exam_id)
+                this.isExamStart = true
+              } else {
+                // 已交卷，显示得分
+                this.isExamEnd = true
+                if (res.sco_score === null) {
+                  this.score = 0
+                } else {
+                  this.score = res.sco_score
+                }
+              }
+            }, res => {
+            // 如果找不到考试记录，则生成一场新的考试，先生成考题
+              let data = {
+                '_csrf': this.$cookies.get('csrfToken'),
+                gid: this.questInfo.gid,
+                num: this.questInfo.num,
+                score: this.questInfo.score,
+                id: this.id,
+                examId: this.event.exam_id
+              }
+              // console.log(data)
+              this.$api.post('api/v1/examRecords', data, res => {
+              // 再生成考试记录
+                let dataScoreList = {
+                  '_csrf': this.$cookies.get('csrfToken'),
+                  examId: this.event.exam_id
+                }
+                this.$api.post('api/v1/accounts/' + this.id + '/scoreLists/', dataScoreList, res => {
+                  if (res === 'Created') {
+                    this.$session.set('examid', this.event.exam_id)
+                  }
+                }, rest => {})
+              })
+            })
           // console.log(data)
-          this.$api.post('api/v1/examRecords', data, res => {
-            console.log(res)
-          }, rest => {})
         },
         getExamList () {
           // 根据班级获取考试
@@ -164,11 +200,19 @@
         },
         handleEdit (index, row) {
           // console.log(index)
+          this.score = null
+          this.isExamEnd = false
+          this.isExamStart = false
+          this.$session.set('examid', this.event.exam_id)
           this.event = row
           this.questInfo = JSON.parse(this.event.exam_questInfo)
           this.questInfo.type = '选择题'
           this.createRecord()
           this.dialogTableVisible = true
+        },
+        handelStart () {
+          console.log(this.$session.get('examid'))
+          this.$router.push('/Examine')
         }
       },
       computed: {
@@ -181,114 +225,118 @@
 
 
 <style scoped>
-    .el-row {
-        margin-bottom: 20px;
-    }
+  .el-row {
+      margin-bottom: 20px;
+  }
 
-    .grid-content {
-        display: flex;
-        align-items: center;
-        height: 100px;
-    }
+  .grid-content {
+      display: flex;
+      align-items: center;
+      height: 100px;
+  }
 
-    .grid-cont-right {
-        flex: 1;
-        text-align: center;
-        font-size: 12px;
-        color: #999;
-    }
+  .grid-cont-right {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+  }
 
-    .grid-num {
-        font-size: 30px;
-        font-weight: bold;
-    }
+  .grid-num {
+      font-size: 30px;
+      font-weight: bold;
+  }
 
-    .grid-con-icon {
-        font-size: 50px;
-        width: 100px;
-        height: 100px;
-        text-align: center;
-        line-height: 100px;
-        color: #fff;
-    }
+  .grid-con-icon {
+      font-size: 50px;
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      line-height: 100px;
+      color: #fff;
+  }
 
-    .grid-con-1 .grid-con-icon {
-        background: rgb(45, 140, 240);
-    }
+  .grid-con-1 .grid-con-icon {
+      background: rgb(45, 140, 240);
+  }
 
-    .grid-con-1 .grid-num {
-        color: rgb(45, 140, 240);
-    }
+  .grid-con-1 .grid-num {
+      color: rgb(45, 140, 240);
+  }
 
-    .grid-con-2 .grid-con-icon {
-        background: rgb(100, 213, 114);
-    }
+  .grid-con-2 .grid-con-icon {
+      background: rgb(100, 213, 114);
+  }
 
-    .grid-con-2 .grid-num {
-        color: rgb(45, 140, 240);
-    }
+  .grid-con-2 .grid-num {
+      color: rgb(45, 140, 240);
+  }
 
-    .grid-con-3 .grid-con-icon {
-        background: rgb(242, 94, 67);
-    }
+  .grid-con-3 .grid-con-icon {
+      background: rgb(242, 94, 67);
+  }
 
-    .grid-con-3 .grid-num {
-        color: rgb(242, 94, 67);
-    }
+  .grid-con-3 .grid-num {
+      color: rgb(242, 94, 67);
+  }
 
-    .user-info {
-        display: flex;
-        align-items: center;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #ccc;
-        margin-bottom: 20px;
-    }
+  .user-info {
+      display: flex;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 20px;
+  }
 
-    .user-avator {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-    }
+  .user-avator {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+  }
 
-    .user-info-cont {
-        padding-left: 50px;
-        flex: 1;
-        font-size: 14px;
-        color: #999;
-    }
+  .user-info-cont {
+      padding-left: 50px;
+      flex: 1;
+      font-size: 14px;
+      color: #999;
+  }
 
-    .user-info-cont div:first-child {
-        font-size: 30px;
-        color: #222;
-    }
+  .user-info-cont div:first-child {
+      font-size: 30px;
+      color: #222;
+  }
 
-    .user-info-list {
-        font-size: 14px;
-        color: #999;
-        line-height: 25px;
-    }
+  .user-info-list {
+      font-size: 14px;
+      color: #999;
+      line-height: 25px;
+  }
 
-    .user-info-list span {
-        margin-left: 30px;
-    }
+  .user-info-list span {
+      margin-left: 30px;
+  }
 
-    .mgb20 {
-        margin-bottom: 20px;
-    }
+  .mgb20 {
+      margin-bottom: 20px;
+      /* min-width: 350px; */
+  }
 
-    .todo-item {
-        font-size: 14px;
-    }
+  .todo-item {
+      font-size: 14px;
+  }
 
-    .todo-item-del {
-        text-decoration: line-through;
-        color: #999;
-    }
+  .todo-item-del {
+      text-decoration: line-through;
+      color: #999;
+  }
 
-    .exam-info {
-      font-size: 16px;
-      font-weight: 500;
-      padding-left: 30px;
-    }
-
+  .exam-info {
+    font-size: 16px;
+    font-weight: 500;
+    padding-left: 30px;
+  }
+  
+  .dash-main {
+    min-width: 1200px;
+  }
 </style>

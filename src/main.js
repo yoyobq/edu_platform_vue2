@@ -6,11 +6,12 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 // import '../static/css/theme-green/index.css'; // 浅绿色主题
 import 'font-awesome/css/font-awesome.css'
-import 'babel-polyfill'
+// import 'babel-polyfill' // ie8兼容
 
 import VueSession from 'vue-session'
 import api from './api/index.js'
 import VueCookies from 'vue-cookies'
+import VueI18n from 'vue-i18n' // 国际化插件
 
 Vue.use(api)
 Vue.prototype.$api = api
@@ -18,6 +19,7 @@ Vue.prototype.$api = api
 Vue.use(VueCookies)
 Vue.use(VueSession)
 Vue.use(ElementUI, { size: 'small' })
+Vue.use(VueI18n)
 Vue.prototype.$axios = axios
 
 // 使用钩子函数对路由进行权限跳转
@@ -40,7 +42,17 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+// 注册i18n实例，并引入语言文件
+const i18n = new VueI18n({
+  locale: 'zh',
+  messages: {
+    'zh': require('./assets/languages/zh.json'),
+    'en': require('./assets/languages/en.json')
+  }
+})
+
 new Vue({
   router,
+  i18n,
   render: h => h(App)
 }).$mount('#app')

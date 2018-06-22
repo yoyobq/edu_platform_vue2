@@ -48,7 +48,7 @@ import bus from '../common/bus'
 export default {
   data () {
     return {
-      collapse: true,
+      collapse: false,
       fullscreen: false,
       name: 'GUEST',
       message: 2
@@ -103,7 +103,7 @@ export default {
     }
   },
   mounted () {
-    if (document.body.clientWidth < 1500) {
+    if (document.body.clientWidth < 1280) {
       this.collapseChage()
     }
   }
