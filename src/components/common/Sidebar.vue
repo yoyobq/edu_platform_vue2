@@ -9,13 +9,17 @@
                             <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
                         </template>
                         <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
-                            {{ subItem.title }}
+                            <template v-if="isShow(subItem.limit)">
+                              {{ subItem.title }}
+                            </template>
                         </el-menu-item>
                     </el-submenu>
                 </template>
                 <template v-else>
                     <el-menu-item :index="item.index" :key="item.index">
+                      <template v-if="isShow(item.limit)">
                         <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
+                       </template>
                     </el-menu-item>
                 </template>
             </template>
@@ -28,66 +32,80 @@ import bus from '../common/bus'
 export default {
   data () {
     return {
+      permission: JSON.parse(sessionStorage.getItem('permission')),
       collapse: false,
       items: [
+        // {
+        //   icon: 'el-icon-star-on',
+        //   index: 'dashboard',
+        //   title: '系统首页'
+        // },
+        {
+          icon: 'el-icon-tickets',
+          index: 'module',
+          title: this.$t('common.mainPage.module'),
+          limit: 'none'
+        },
+        // {
+        //   icon: 'el-icon-message',
+        //   index: 'tabs',
+        //   title: this.$t('common.mainPage.message')
+        // },
         {
           icon: 'el-icon-setting',
-          index: 'dashboard',
-          title: '系统首页'
-        },
-        // {
-        //     icon: 'el-icon-tickets',
-        //     index: 'table',
-        //     title: '基础表格'
-        // },
-        // {
-        //     icon: 'el-icon-message',
-        //     index: 'tabs',
-        //     title: 'tab选项卡'
-        // },
-        // {
-        //     icon: 'el-icon-date',
-        //     index: '3',
-        //     title: '表单相关',
-        //     subs: [
-        //         {
-        //             index: 'form',
-        //             title: '基本表单'
-        //         },
-        //         {
-        //             index: 'editor',
-        //             title: '富文本编辑器'
-        //         },
-        //         {
-        //             index: 'markdown',
-        //             title: 'markdown编辑器'
-        //         },
-        //         {
-        //             index: 'upload',
-        //             title: '文件上传'
-        //         }
-        //     ]
-        // },
-        // {
-        //     icon: 'el-icon-star-on',
-        //     index: 'charts',
-        //     title: 'schart图表'
-        // },
-        // {
-        //     icon: 'el-icon-rank',
-        //     index: 'drag',
-        //     title: '拖拽列表'
-        // },
-        {
-          icon: 'el-icon-warning',
-          index: 'permission',
-          title: '权限测试'
+          index: 'personal',
+          title: this.$t('common.mainPage.personal'),
+          limit: 'none'
         },
         {
-          icon: 'el-icon-error',
-          index: '404',
-          title: '404页面'
+          icon: 'el-icon-share',
+          index: 'users',
+          title: this.$t('common.mainPage.users'),
+          limit: 'Admin'
         }
+        // {
+        //   icon: 'el-icon-date',
+        //   index: '3',
+        //   title: '表单相关',
+        //   subs: [
+        //     {
+        //       index: 'form',
+        //       title: '基本表单'
+        //     },
+        //     {
+        //       index: 'editor',
+        //       title: '富文本编辑器'
+        //     },
+        //     {
+        //       index: 'markdown',
+        //       title: 'markdown编辑器'
+        //     },
+        //     {
+        //       index: 'upload',
+        //       title: '文件上传'
+        //     }
+        //   ]
+        // },
+        // {
+        //   icon: 'el-icon-star-on',
+        //   index: 'charts',
+        //   title: 'schart图表'
+        // },
+        // {
+        //   icon: 'el-icon-rank',
+        //   index: 'drag',
+        //   title: '拖拽列表'
+        // },
+        // {
+        //   icon: 'el-icon-warning',
+        //   index: 'permission',
+        //   title: '权限测试'
+        // },
+        // {
+        //   icon: 'el-icon-error',
+        //   index: '404',
+        //   title: '404页面'
+        // }
       ]
     }
   },
@@ -101,6 +119,16 @@ export default {
     bus.$on('collapse', msg => {
       this.collapse = msg
     })
+  },
+  methods: {
+    isShow (limit) {
+      if (limit === 'none') {
+        return true
+      } else if (limit === this.permission.status) {
+        return true
+      }
+      return false
+    }
   }
 }
 </script>
@@ -118,7 +146,7 @@ export default {
         width: 0;
     }
     .sidebar-el-menu:not(.el-menu--collapse){
-        width: 250px;
+        width: 200px;
     }
     .sidebar > ul {
         height:100%;

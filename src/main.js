@@ -6,11 +6,13 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 // import '../static/css/theme-green/index.css'; // 浅绿色主题
 import 'font-awesome/css/font-awesome.css'
-// import 'babel-polyfill' // ie8兼容
+import 'babel-polyfill' // ie8兼容
 import VueSession from 'vue-session'
 import api from './api/index.js'
 import VueCookies from 'vue-cookies'
 import VueI18n from 'vue-i18n' // 国际化插件
+// import Crypto from 'crypto'
+import Moment from 'moment'
 
 Vue.use(api)
 Vue.prototype.$api = api
@@ -19,16 +21,24 @@ Vue.use(VueCookies)
 Vue.use(VueSession)
 Vue.use(ElementUI, { size: 'small' })
 Vue.use(VueI18n)
+// Vue.use(Crypto)
+Vue.prototype.$moment = Moment
 Vue.prototype.$axios = axios
 
 // 使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
-  const role = localStorage.getItem('pf_username')
-  if (!role && to.path !== '/login') {
+  const role = JSON.parse(sessionStorage.getItem('permission'))
+  if (to.path === '/signUpByMail' || to.path === '/signUp' || to.path === '/login') {
+    next()
+  } else if (sessionStorage.getItem('id') === null) {
     next('/login')
+  } else if (!role && to.path !== '/login') {
+    next('/login')
+  } else if (role && to.path === '/login') {
+    next('/')
   } else if (to.meta.permission) {
     // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
-    role === 'admin' ? next() : next('/403')
+    role.status === 'Admin' ? next() : next('/403')
   } else {
     // 简单的判断IE10及以下不进入富文本编辑器，该组件不兼容
     if (navigator.userAgent.indexOf('MSIE') > -1 && to.path === '/editor') {
@@ -43,7 +53,7 @@ router.beforeEach((to, from, next) => {
 
 // 注册i18n实例，并引入语言文件
 const i18n = new VueI18n({
-  locale: 'zh',
+  locale: 'en',
   messages: {
     'zh': require('./assets/languages/zh.json'),
     'en': require('./assets/languages/en.json')

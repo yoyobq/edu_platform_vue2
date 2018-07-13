@@ -4,39 +4,37 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">SSTS 智能教学平台</div>
+        <div class="logo">XJTLU TA MANAGEMENT SYSTEM</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
                 <div class="btn-fullscreen" @click="handleFullScreen">
-                    <el-tooltip effect="dark" :content="fullscreen?`取消全屏`:`全屏`" placement="bottom">
+                    <el-tooltip effect="dark" :content="isFullScreen()" placement="bottom">
                         <i class="el-icon-rank"></i>
                     </el-tooltip>
                 </div>
                 <!-- 消息中心 -->
-                <!-- <div class="btn-bell">
-                    <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
+                <div class="btn-bell">
+                    <!-- <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/tabs">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
-                </div> -->
+                    <span class="btn-bell-badge" v-if="message"></span> -->
+                </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="static/img/img.jpg"></div>
+                <div class="user-avator"><img :src="avatarPic"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <!-- <a href="#">
-                            <el-dropdown-item>个人设置</el-dropdown-item>
-                        </a> -->
+                        <el-dropdown-item command="personal">{{$t('common.mainPage.personal')}}</el-dropdown-item>
                         <!-- <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
                             <el-dropdown-item>项目仓库</el-dropdown-item>
                         </a> -->
-                        <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item> 
+                        <el-dropdown-item divided command="loginout">{{$t('common.mainPage.logout')}}</el-dropdown-item> 
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -50,9 +48,13 @@ export default {
     return {
       collapse: false,
       fullscreen: false,
+      avatarPic: '',
       name: 'GUEST',
       message: 2
     }
+  },
+  created () {
+    this.avatarPic = 'static/img/' + localStorage.getItem('pf_avatarPath')
   },
   computed: {
     username () {
@@ -62,11 +64,23 @@ export default {
     }
   },
   methods: {
+    isFullScreen () {
+      if (this.fullscreen) {
+        return this.$t('common.mainPage.cancelFull')
+      } else {
+        // console.log(this.$t('common.mainPage.cancelFull'))
+        return this.$t('common.mainPage.fullScreen')
+      }
+    },
     // 用户名下拉菜单选择事件
     handleCommand (command) {
       if (command === 'loginout') {
-        localStorage.removeItem('pf_username')
+        sessionStorage.clear()
+        localStorage.clear()
         this.$router.push('/login')
+      }
+      if (command === 'personal') {
+        this.$router.push('/personal')
       }
     },
     // 侧边栏折叠
@@ -103,7 +117,7 @@ export default {
     }
   },
   mounted () {
-    if (document.body.clientWidth < 1280) {
+    if (document.body.clientWidth < 1440) {
       this.collapseChage()
     }
   }
@@ -126,7 +140,7 @@ export default {
     }
     .header .logo{
         float: left;
-        width:250px;
+        width:400px;
         line-height: 70px;
     }
     .header-right{

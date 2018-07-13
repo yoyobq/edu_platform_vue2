@@ -6,7 +6,7 @@
                     <el-col>
                         <el-card shadow="hover" class="mgb20">
                             <div class="user-info">
-                                <img src="static/img/img.jpg" class="user-avator" alt="">
+                                <img :src="avatarPic" class="user-avator" alt="">
                                 <div class="user-info-cont">
                                     <div class="user-info-name">{{name}}</div>
                                     <div>{{className}}</div>
@@ -15,7 +15,7 @@
                             <div class="user-info-list">上次登录时间：<span>{{new Date(lastLoginTime).toLocaleString()}}</span></div>
                             <div class="user-info-list">上次登录地点：<span>{{lastLoginIP}}</span></div>
                         </el-card>
-                        <!-- <el-card shadow="hover">
+                        <el-card shadow="hover">
                             <div slot="header" class="clearfix">
                                 <span>语言详情</span>
                             </div>
@@ -27,12 +27,12 @@
                             <el-progress :percentage="11.9"></el-progress>
                             HTML
                             <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
-                        </el-card> -->
+                        </el-card>
                     </el-col>
                 </el-row>
             </el-col>
             <el-col :span="16">
-                <!-- <el-row :gutter="20" class="mgb20">
+                <el-row :gutter="20" class="mgb20">
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-1">
@@ -66,7 +66,7 @@
                             </div>
                         </el-card>
                     </el-col>
-                </el-row> -->
+                </el-row>
                 <el-card shadow="hover" :body-style="{ height: '304px'}">
                     <div slot="header" class="clearfix">
                         <span>待办事项</span>
@@ -130,18 +130,28 @@
           className: localStorage.getItem('pf_className'),
           lastLoginTime: localStorage.getItem('pf_lastLoginTime'),
           lastLoginIP: localStorage.getItem('pf_lastLoginIP'),
+          avatarPic: '',
           eventList: [],
+          permission: [],
           event: {},
           questInfo: {},
           dialogTableVisible: false,
-          id: this.$session.get('id'),
+          id: sessionStorage.getItem('id'),
           isExamStart: false,
           isExamEnd: false,
           score: null
         }
       },
       created () {
+        this.avatarPic = 'static/img/' + localStorage.getItem('pf_avatarPath')
+        if (this.name === '访客') {
+          this.$router.push('/personal')
+        }
         this.getExamList()
+        console.log(this.permission)
+        if (this.permission.index) {
+          this.$router.push('/' + this.permission.index)
+        }
       },
       methods: {
         createRecord () {
@@ -151,7 +161,7 @@
               // 如果可以找到,判断是否已经交卷
               if (res.sco_SubmitTime === null) {
                 // 未交卷
-                this.$session.set('examid', this.event.exam_id)
+                sessionStorage.set('examid', this.event.exam_id)
                 this.isExamStart = true
               } else {
                 // 已交卷，显示得分
@@ -165,7 +175,7 @@
             }, res => {
             // 如果找不到考试记录，则生成一场新的考试，先生成考题
               let data = {
-                '_csrf': this.$cookies.get('csrfToken'),
+                '_csrf': this.$cookies.getItem('csrfToken'),
                 gid: this.questInfo.gid,
                 num: this.questInfo.num,
                 score: this.questInfo.score,
@@ -181,9 +191,9 @@
                 }
                 this.$api.post('api/v1/accounts/' + this.id + '/scoreLists/', dataScoreList, res => {
                   if (res === 'Created') {
-                    this.$session.set('examid', this.event.exam_id)
+                    sessionStorage.setItem('examid', this.event.exam_id)
                   }
-                }, rest => {})
+                }, res => {})
               })
             })
           // console.log(data)
@@ -196,14 +206,16 @@
           this.$api.get('api/v1/classes/' + this.classId + '/examLists', null, res => {
             this.eventList = res
             // console.log(res)
-          }, rest => {})
+          }, res => {
+            console.log(res)
+          })
         },
         handleEdit (index, row) {
           // console.log(index)
           this.score = null
           this.isExamEnd = false
           this.isExamStart = false
-          this.$session.set('examid', this.event.exam_id)
+          sessionStorage.setItem('examid', this.event.exam_id)
           this.event = row
           this.questInfo = JSON.parse(this.event.exam_questInfo)
           this.questInfo.type = '选择题'
@@ -211,7 +223,7 @@
           this.dialogTableVisible = true
         },
         handelStart () {
-          console.log(this.$session.get('examid'))
+          console.log(sessionStorage.getItem('examid'))
           this.$router.push('/Examine')
         }
       },

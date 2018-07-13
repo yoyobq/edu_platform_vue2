@@ -10,12 +10,11 @@
         </ul>
         <div class="tags-close-box">
             <el-dropdown @command="handleTags">
-                <el-button size="mini" type="primary">
-                    标签选项<i class="el-icon-arrow-down el-icon--right"></i>
+                <el-button size="mini" type="primary">{{$t('common.mainPage.tabsOption')}}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-dropdown-menu size="small" slot="dropdown">
-                    <el-dropdown-item command="other">关闭其他</el-dropdown-item>
-                    <el-dropdown-item command="all">关闭所有</el-dropdown-item>
+                    <el-dropdown-item command="other">{{$t('common.mainPage.closeOther')}}</el-dropdown-item>
+                    <el-dropdown-item command="all">{{$t('common.mainPage.closeAll')}}</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
         </div>

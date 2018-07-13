@@ -3,7 +3,7 @@
     <div id="nav-top">
       <div id="nav-centerbox">
           <span id="nav-logo"><h2>{{ pageTitle }}</h2></span>
-          <span id="nav-right"><span id="nav-name">{{ this.$session.get('realname') }}</span><el-button type="warning" @click="submitExam">完成交卷</el-button></span>
+          <span id="nav-right"><span id="nav-name">{{ sessionStorage.getItem('realname') }}</span><el-button type="warning" @click="submitExam">完成交卷</el-button></span>
       </div>
     </div>
     <div id="nav-height"></div>
@@ -27,7 +27,7 @@ export default {
       pageTitle: 'SSTS 智能化考试平台',
       permit: [],
       personalInfo: '',
-      examId: this.$session.get('examid'),
+      examId: sessionStorage.getItem('examid'),
       id: 0,
       modalResult: false,
       score: 0,
@@ -40,7 +40,7 @@ export default {
     // }
   },
   created () {
-    this.id = this.$session.get('id')
+    this.id = sessionStorage.getItem('id')
   },
   methods: {
     submitExam: function () {
