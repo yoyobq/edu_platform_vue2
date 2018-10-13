@@ -1,5 +1,6 @@
 <template>
-  <el-dialog :title="$t('common.module.moduleAudit')" :visible.sync="auditVisible" width="960px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+  <!-- Appointment -->
+  <el-dialog :title="$t('common.module.moduleAudit')" :visible.sync="auditVisible" width="1080px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
     <el-row>
       <el-col :span="4">{{$t('common.module.moduleTitle')}}:</el-col>
       <el-col :span="7">{{row.moduleTitle}} </el-col>
@@ -14,9 +15,9 @@
     </el-row>
     <el-row>
       <el-col :span="5">{{$t('common.module.reTaNum')}}:</el-col>
-      <el-col :span="5">{{confirm.TA}} person / {{requireNum['TA']}} person</el-col>
+      <el-col :span="6">{{confirm.TA}} person / {{requireNum['TA']}} person</el-col>
       <el-col :span="7">{{$t('common.module.reMarkerNum')}}:</el-col>
-      <el-col :span="7">{{confirm['Marker']}} person / {{requireNum['Marker']}} person</el-col>
+      <el-col :span="6">{{confirm['Marker']}} person / {{requireNum['Marker']}} person</el-col>
     </el-row>
     <el-row>
       <el-col :span="24" style="padding-top: 30px; font-weight: 700; align: center; color: #409EFF">I. Appoint a person as your TA.</el-col>
@@ -50,50 +51,54 @@
       <el-col :span="24" style="padding-top: 30px; font-weight: 700; align: center; color: #409EFF">II. The following students are applying for TA/Marker of your module.</el-col>
     </el-row>
     <el-table :data="tableData"  style="width: 100%" >
-    <el-table-column :label="$t('common.module.submitTime')" width="120" sortable>
-      <template slot-scope="scope">
-        <i class="el-icon-time"></i>
-        <span style="margin-left: 10px">{{ $moment(Date.parse(scope.row.submitTime)).format('YYYY-MM-DD') }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.name')" width="120">
-      <template slot-scope="scope"> {{ scope.row.realName }}</template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.school')" width="120">
-      <template slot-scope="scope"> {{ scope.row.school }}</template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.department')" width="100">
-      <template slot-scope="scope"> {{ scope.row.department }}</template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.degree')" width="100">
-      <template slot-scope="scope"> {{ scope.row.highestDegree }}</template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.type')" sortable width="80">
-      <template slot-scope="scope"> {{ scope.row.type }}</template>
-    </el-table-column>
-    <el-table-column :label="$t('common.module.status')" width="100" align="center">
-      <template slot-scope="scope">
-        <el-tag v-if="scope.row.status==='apply'">{{$t('common.module.pending')}}</el-tag>
-        <el-tag v-if="scope.row.status==='pass'" type='success'>{{$t('common.module.pass')}}</el-tag>
-        <el-tag v-if="scope.row.status==='deny'" type='danger'>{{$t('common.module.reject')}}</el-tag>
-        <el-tag v-if="scope.row.status==='assigned'" type='success'>{{$t('common.module.assigned')}}</el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column label="Operation">
-      <template slot-scope="scope" v-if="isShowBtn(scope.row)">
-        <el-button
-          size="mini"
-          @click="agreeApp(scope.row)">{{$t('common.module.agreeBtn')}}</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="denyApp(scope.row)">{{$t('common.module.rejectBtn')}}</el-button>
-      </template>
-      <template>
-        {{msg}}
-      </template>
-    </el-table-column>
-  </el-table>
+      <!-- <el-table-column :label="$t('common.module.submitTime')" width="120" sortable>
+        <template slot-scope="scope">
+          <i class="el-icon-time"></i>
+          <span style="margin-left: 10px">{{ $moment(Date.parse(scope.row.submitTime)).format('YYYY-MM-DD') }}</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column :label="$t('common.module.name')" width="120">
+        <template slot-scope="scope"> {{ scope.row.realName }}</template>
+      </el-table-column>
+      <!-- <el-table-column :label="$t('common.module.school')" width="120">
+        <template slot-scope="scope"> {{ scope.row.school }}</template>
+      </el-table-column> -->
+      <el-table-column :label="$t('common.personal.eMail')" width="220">
+        <template slot-scope="scope"> {{ scope.row.email }}</template>
+      </el-table-column>
+      <el-table-column :label="$t('common.personal.phone')" width="120">
+        <template slot-scope="scope"> {{ scope.row.cellphone }}</template>
+      </el-table-column>
+      <el-table-column :label="$t('common.module.department')" width="100">
+        <template slot-scope="scope"> {{ scope.row.department }}</template>
+      </el-table-column>
+      <el-table-column :label="$t('common.module.degree')" width="110">
+        <template slot-scope="scope"> {{ scope.row.highestDegree }}</template>
+      </el-table-column>
+      <el-table-column prop="type" :label="$t('common.module.type')" sortable width="80"></el-table-column>
+      <el-table-column :label="$t('common.module.status')" width="100" align="center">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status==='apply'">{{$t('common.module.pending')}}</el-tag>
+          <el-tag v-if="scope.row.status==='pass'" type='success'>{{$t('common.module.pass')}}</el-tag>
+          <el-tag v-if="scope.row.status==='deny'" type='danger'>{{$t('common.module.reject')}}</el-tag>
+          <el-tag v-if="scope.row.status==='assigned'" type='success'>{{$t('common.module.assigned')}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Operation">
+        <template slot-scope="scope" v-if="isShowBtn(scope.row)">
+          <el-button
+            size="mini"
+            @click="agreeApp(scope.row)">{{$t('common.module.agreeBtn')}}</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="denyApp(scope.row)">{{$t('common.module.rejectBtn')}}</el-button>
+        </template>
+        <template>
+          {{msg}}
+        </template>
+      </el-table-column>
+    </el-table>
     <span slot="footer" class="dialog-footer">
         <el-button @click="closeAudit">{{$t('common.module.close')}}</el-button>
     </span>
@@ -203,7 +208,8 @@ export default {
           '_csrf': this.$cookies.get('csrfToken'),
           params: {
             id: row.id,
-            status: 'pass'
+            status: 'pass',
+            type: row.type
           }
         }
         this.$api.put('api/v1/moduleApplyRecords/' + row.id, data, res => {
@@ -229,7 +235,8 @@ export default {
           '_csrf': this.$cookies.get('csrfToken'),
           params: {
             id: row.id,
-            status: 'deny'
+            status: 'deny',
+            type: row.type
           }
         }
         this.$api.put('api/v1/moduleApplyRecords/' + row.id, data, res => {
@@ -257,6 +264,7 @@ export default {
     getStudents () {
       // http://192.168.72.55:7001/api/v1/informations
       this.$api.get('api/v1/accounts', null, res => {
+        // console.log(res)
         let result = res.map(item => {
           return { value: item.id, label: item.realName, permission: item.permission }
         })
@@ -294,6 +302,7 @@ export default {
           this.requireNum['TA'] = this.row.taNum
           this.requireNum['Marker'] = this.row.markerNum
           this.tableData = res
+          console.log(this.tableData)
         }, res => {})
         // console.log(this.confirm)
       },

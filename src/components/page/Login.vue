@@ -14,7 +14,7 @@
             <div class="login-btn">
               <el-button type="primary" @click="submitForm('loginForm')">{{$t('common.loginPage.btnLogin')}}</el-button>
             </div>
-            <el-button type="text" class="reg-info" @click="signUp()"><i class="fa fa-user-plus"></i> {{$t('common.loginPage.register')}}</el-button>
+            <el-button type="text" class="reg-info" @click="signUp()" ><i class="fa fa-user-plus"></i> {{$t('common.loginPage.verify')}}</el-button>
           </el-form>
         </el-tab-pane>
         <!-- <el-tab-pane :label="$t('common.loginPage.tabsEmail')" name="email">
@@ -149,7 +149,7 @@ export default {
       this.$router.push('/signUpByMail')
     },
     signUp () {
-      this.$router.push('/signUp')
+      this.$router.push('/signUpByIdentity')
     },
     computePermission (permission) {
       permission = JSON.parse(permission)

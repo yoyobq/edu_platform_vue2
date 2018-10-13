@@ -8,20 +8,22 @@
       "message": "消息中心",
       "personal": "个人设置",
       "module": "课程总览",
+      "users": "用户",
       "logout": "退出登录",
       "tabsOption": "标签选项",
       "closeOther": "关闭其他",
       "closeAll": "关闭所有"
     },
     "loginPage": {
-      "formTitle": "SSTS 平台登录",
+      "formTitle": "SSTS 智能平台登录",
       "tabsAccount": "帐号登录",
       "tabsEmail": "邮箱登录",
       "password": "密码",
       "email": "电子邮件",
       "btnLogin": "登录",
       "username": "用户名",
-      "register": "点我注册"
+      "register": "点我注册",
+      "verify": "点我验证身份"
     },
     "signUp": {
       "formTitle": "新用户注册",
@@ -131,6 +133,7 @@
       "notFound": "账户名不存在或密码错"
     },
     "signUp": {
+      "inputIdNo": "请输入您的身份证号",
       "invalidName": "用户名要求4到16位，由数字、字母或下划线组成",
       "minPassword": "密码不得少于6个字符",
       "inputName": "请输入用户名",

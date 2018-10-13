@@ -2,7 +2,7 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-tickets"></i> {{$t('common.module.module')}}</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-tickets"></i>{{$t('common.module.module')}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -15,60 +15,37 @@
                   <el-button type="primary" icon="search" @click="search">{{$t('common.module.search')}}</el-button>
                 </el-col>
                 <el-col :span="3" :offset="7">
-                  <el-button v-if="permission === 3 || permission === 2" type="danger" @click="handleAdd">{{$t('common.module.modulePublish')}}</el-button>
+                  <el-button v-if="permission === 3 || permission ===2" type="danger" @click="handleAdd">{{$t('common.module.modulePublish')}}</el-button>
                 </el-col>
               </el-row>
             </div>
             <el-tabs v-model="activeName" @tab-click="handleClick">
-              <template v-if="permission !== 1" >
-                <el-tab-pane label="My req." name="recruiting"></el-tab-pane>
-              </template>
-              <template v-else>
-                <el-tab-pane label="My Work" name="stuWork"></el-tab-pane>
-              </template>
+              <el-tab-pane label="My req." name="recruiting"></el-tab-pane>
               <el-tab-pane label="All req." name="public"></el-tab-pane>
-              <template v-if="permission !== 1" >
-                <el-tab-pane label="Unpublished" name="private"></el-tab-pane>
-              </template>
+              <el-tab-pane label="Unpublished" name="private"></el-tab-pane>
               <el-tab-pane label="Completed" name="done"></el-tab-pane>
             </el-tabs>
               <el-table :data="data" border ref="multipleTable" stripe empty-text="No Data">
                 <el-table-column prop="id" :label="$t('common.module.moduleId')" width="50" align="center"></el-table-column>
-                <el-table-column prop="moduleTitle" :label="$t('common.module.moduleTitle')" header-align="center" show-overflow-tooltip effect="light" width="200"></el-table-column>
+                <el-table-column prop="moduleTitle" :label="$t('common.module.moduleTitle')" header-align="center" width="170"></el-table-column>
                 <el-table-column prop="moduleLeaderName" :label="$t('common.module.moduleLeaderName')" header-align="center" width="150"></el-table-column>
                 <el-table-column prop="duration" :label="$t('common.module.duration')" align="center" width="100">1</el-table-column>
                 <el-table-column prop="moduleWeek" :label="$t('common.module.moduleWeekCut')" align="center" width="60" ></el-table-column>
-                <el-table-column prop="classHour" :label="$t('common.module.classHour')" header-align="center" show-overflow-tooltip effect="light" width="144" ></el-table-column>
+                <el-table-column prop="classHour" :label="$t('common.module.classHour')" header-align="center" show-overflow-tooltip effect="light" width="164" ></el-table-column>
                 <el-table-column prop="taNum" :label="$t('common.module.taNumCut')" align="center" width="70" ></el-table-column>
                 <el-table-column prop="markerNum" :label="$t('common.module.markerNumCut')" align="center" width="70" ></el-table-column>
                 <el-table-column :label="$t('common.module.operate')" align="center">
                     <template slot-scope="scope">
                         <template v-if="scope.row.status === 'finish'">The module has finished.</template>
-                        <template v-else-if="permission === 1">
-                          <template v-if="activeName === 'stuWork'">
-                            <span>Your application has been accepted.</span>
-                            <el-button  size="mini" type="success" plain @click="handleApply(scope.$index, scope.row)">{{$t('common.module.checkDetails')}}</el-button>
-                          </template>
-                          <template v-else>
-                            <el-button  size="mini" type="warning" plain @click="handleApply(scope.$index, scope.row)">{{$t('common.module.applyFor')}}</el-button>
-                          </template>
-                        </template>
+                        <el-button v-else-if="permission === 1" size="mini" type="warning" plain @click="handleApply(scope.$index, scope.row)">{{$t('common.module.applyFor')}}</el-button>
                         <!-- 如果是管理员或该课程创建者 -->
                         <template v-else-if="permission === 3 || isMyModule(scope.row.moduleLeaderId)" >
                           <template v-if="scope.row.status === 'private'">
                             <el-button size="mini" type="warning" plain @click="handleEdit(scope.$index, scope.row)">{{$t('common.module.editPublish')}}</el-button>
                           </template>
                           <template v-if="scope.row.status === 'public'">
-                            <el-tooltip class="item" effect="dark" :content="$t('common.module.editBtn')" placement="bottom-start">
-                              <el-button size="mini" type="warning" icon="el-icon-edit" plain @click="handleEdit(scope.$index, scope.row)"></el-button>
-                            </el-tooltip>
-                            <el-tooltip class="item" effect="dark" :content="$t('common.module.audit')" placement="bottom-start">
-                              <el-button size="mini" type="success" icon="el-icon-location" @click="handleAudit(scope.$index, scope.row)"></el-button>
-                            </el-tooltip>
-                            <!-- 考勤 -->
-                            <!-- <el-tooltip class="item" effect="dark" :content="$t('common.module.attendance')" placement="bottom-start">
-                              <el-button size="mini" type="primary" icon="el-icon-date" @click="handleAttend(scope.$index, scope.row)"></el-button>
-                            </el-tooltip> -->
+                            <el-button size="mini" type="warning" plain @click="handleEdit(scope.$index, scope.row)">{{$t('common.module.editBtn')}}</el-button>
+                            <el-button size="mini" type="success" @click="handleAudit(scope.$index, scope.row)">{{$t('common.module.audit')}}</el-button>
                           </template>
                           <!-- <template v-if="permission === 3 || (isMyModule(scope.row.moduleLeaderId)  && scope.row.status === 'private')"> 
                           若是管理员或是所有者且状态是私有
@@ -89,7 +66,6 @@
         <editModule v-if="permission === 3 || permission ===2" :editShow="editShow" @update:editShow="editShow = $event" :row="row"></editModule>
         <apply v-if="permission === 1" :applyShow="applyShow" @update:applyShow="applyShow = $event" :row="row"></apply>
         <audit v-if="permission === 3 || permission ===2" :auditShow="auditShow" @update:auditShow="auditShow = $event" :row="row" :confirm="confirm"></audit>
-        <attend v-if="permission === 3 || permission ===2" :attendShow="attendShow" @update:attendShow="attendShow = $event" :row="row"></attend>
     </div>
 </template>
 
@@ -100,12 +76,11 @@ export default {
     'addModule': resolve => { require(['@/components/module/addModule.vue'], resolve) }, // 模块懒加载，防止加载过慢
     'editModule': resolve => { require(['@/components/module/editModule.vue'], resolve) },
     'audit': resolve => { require(['@/components/module/audit.vue'], resolve) },
-    'apply': resolve => { require(['@/components/module/apply.vue'], resolve) },
-    'attend': resolve => { require(['@/components/module/attend.vue'], resolve) }
+    'apply': resolve => { require(['@/components/module/apply.vue'], resolve) }
   },
   data () {
     return {
-      activeName: 'stuWork',
+      activeName: 'recruiting',
       tableData: [],
       del_list: [],
       cur_page: 1,
@@ -123,20 +98,14 @@ export default {
       editShow: false,
       auditShow: false,
       addShow: false,
-      applyShow: false,
-      attendShow: false
+      applyShow: false
     }
   },
   created () {
     if (this.permission === undefined) {
       this.$router.push('/personal')
     } else {
-      if (this.permission === 1) { // 若是学生用户
-        this.getThisStuWork()
-      } else {
-        this.getMyRecruitingModule()
-        this.activeName = 'recruiting'
-      }
+      this.getMyRecruitingModule()
     }
   },
   computed: {
@@ -178,20 +147,15 @@ export default {
       })
     },
     getMyRecruitingModule () {
-      if (this.permission !== 1) {
-        let data = {
-          status: 'public',
-          moduleLeaderId: this.uId
-        }
-        this.$api.get('api/v1/modules', data, res => {
-          this.tableData = res
-        }, res => {
-          this.tableData = []
-        })
-      } else {
-        this.tableData = []
-        console.log('student')
+      let data = {
+        status: 'public',
+        moduleLeaderId: this.uId
       }
+      this.$api.get('api/v1/modules', data, res => {
+        this.tableData = res
+      }, res => {
+        this.tableData = []
+      })
     },
     getFinishModule () {
       let data = {
@@ -201,18 +165,6 @@ export default {
         this.tableData = res
       })
     },
-    getThisStuWork () {
-      let data = {
-        // spec 并不是某个数据库字段，在此表示该组数据需要特别处理
-        spec: true,
-        uId: this.uId
-      }
-      this.$api.get('api/v1/modules', data, res => {
-        this.tableData = res
-      }, res => {
-        this.tableData = []
-      })
-    },
     handleClick (tab) {
       if (tab.name === 'private') {
         this.getMyPrivatemodule()
@@ -220,8 +172,6 @@ export default {
         this.getFinishModule()
       } else if (tab.name === 'recruiting') {
         this.getMyRecruitingModule()
-      } else if (tab.name === 'stuWork') {
-        this.getThisStuWork()
       } else {
         this.getPublicModule()
       }
@@ -285,10 +235,6 @@ export default {
     },
     handleApply (index, row) {
       this.applyShow = true
-      this.row = row
-    },
-    handleAttend (index, row) {
-      this.attendShow = true
       this.row = row
     },
     handleAudit (index, row) {

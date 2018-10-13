@@ -1,7 +1,7 @@
 // 配置API接口地址
-var root = '/'
+let root = '/'
 // 引用axios
-var axios = require('axios')
+let axios = require('axios')
 // 自定义判断元素类型JS
 function toType (obj) {
   return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
@@ -35,17 +35,22 @@ function filterNull (o) {
 function apiAxios (method, url, params, success, failure) {
   if (params) {
     params = filterNull(params)
-    // console.log(params)
   }
   axios({
     method: method,
     url: url,
-    // 此处有个天坑请注意，get请求是不带body的，什么params，什么body，统统处理成query，别去找了
-    // data: method === 'POST' || method === 'PUT' || method === 'PATCH' ? params : null,
-    // params: method === 'GET' || method === 'DELETE' ? params : null,
-    params: params,
+    // (此处有个天坑请注意，get请求是不带body的，什么params，什么body，统统处理成query，别去找了)
+    // 上一条是以前的注释，有严重的错误，作为学习进度的记录保留，重新解释如下
+    // params会被处理成 url?aaa=xxx&bbb=ooo  这样的形式，目标后台(eggjs为例)可以通过 ctx.query 获取
+    // data会被处理成无法直接观测到的 POST 形式提交，目标后台（eggjs为例）可以通过  ctx.request.body 获取
+    data: method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE' ? params : null,
+    params: method === 'GET' ? params : null,
     baseURL: root,
-    withCredentials: false
+    withCredentials: false,
+    // header中加入自定义的验证参数
+    headers: {
+      'authkey': 'v2secret'
+    }
   })
     .then(function (res) {
       // 按照接口设计，所有的错误都作为html错误抛出

@@ -8,14 +8,17 @@ import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 import 'font-awesome/css/font-awesome.css'
 import 'babel-polyfill' // ie8兼容
 import VueSession from 'vue-session'
-import api from './api/index.js'
+import apiv1 from './api/v1.js'
+import apiv2 from './api/v2.js'
 import VueCookies from 'vue-cookies'
 import VueI18n from 'vue-i18n' // 国际化插件
 // import Crypto from 'crypto'
 import Moment from 'moment'
 
-Vue.use(api)
-Vue.prototype.$api = api
+Vue.use(apiv1)
+Vue.prototype.$api = apiv1
+Vue.use(apiv2)
+Vue.prototype.$apiv2 = apiv2
 
 Vue.use(VueCookies)
 Vue.use(VueSession)
@@ -28,12 +31,16 @@ Vue.prototype.$axios = axios
 // 使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
   const role = JSON.parse(sessionStorage.getItem('permission'))
-  if (to.path === '/signUpByMail' || to.path === '/signUp' || to.path === '/login') {
+  // 若是注册登录页面，无须验证session
+  if (to.path === '/signUpByMail' || to.path === '/signUpByAccount' || to.path === '/signUpByIdentity' || to.path === '/login') {
     next()
+  // 否则验证session是否存在，不存在就去登录页面
   } else if (sessionStorage.getItem('id') === null) {
     next('/login')
+  // session中的permission不存在
   } else if (!role && to.path !== '/login') {
     next('/login')
+  // permission存在但目的地是login
   } else if (role && to.path === '/login') {
     next('/')
   } else if (to.meta.permission) {
@@ -53,7 +60,7 @@ router.beforeEach((to, from, next) => {
 
 // 注册i18n实例，并引入语言文件
 const i18n = new VueI18n({
-  locale: 'en',
+  locale: 'zh',
   messages: {
     'zh': require('./assets/languages/zh.json'),
     'en': require('./assets/languages/en.json')

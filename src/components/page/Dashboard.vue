@@ -17,9 +17,9 @@
                         </el-card>
                         <el-card shadow="hover">
                             <div slot="header" class="clearfix">
-                                <span>语言详情</span>
+                                <span>Learning Progress</span>
                             </div>
-                            Vue
+                            algorithm
                             <el-progress :percentage="57.2" color="#42b983"></el-progress>
                             JavaScript
                             <el-progress :percentage="29.8" color="#f1e05a"></el-progress>
@@ -38,8 +38,8 @@
                             <div class="grid-content grid-con-1">
                                 <i class="el-icon-view grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
+                                    <div class="grid-num">3</div>
+                                    <div>待办事项</div>
                                 </div>
                             </div>
                         </el-card>
@@ -49,8 +49,8 @@
                             <div class="grid-content grid-con-2">
                                 <i class="el-icon-message grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>系统消息</div>
+                                    <div class="grid-num">12</div>
+                                    <div>Messages</div>
                                 </div>
                             </div>
                         </el-card>
@@ -58,10 +58,10 @@
                     <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-3">
-                                <i class="el-icon-goods grid-con-icon"></i>
+                                <i class="el-icon-document grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>数量</div>
+                                    <div class="grid-num">4</div>
+                                    <div>当前考试</div>
                                 </div>
                             </div>
                         </el-card>
@@ -98,7 +98,7 @@
                         </el-table-column>
                         <el-table-column>
                             <template slot-scope="scope">
-                              <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">进入考试</el-button>
+                              <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">Start</el-button>
                             </template>
                         </el-table-column>
                     </el-table>

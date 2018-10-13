@@ -3,25 +3,25 @@
         <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
             <template v-for="item in items">
+              <template v-if="isShow(item.limit)">
                 <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
-                        <template slot="title">
-                            <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
-                        </template>
-                        <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
-                            <template v-if="isShow(subItem.limit)">
-                              {{ subItem.title }}
-                            </template>
-                        </el-menu-item>
-                    </el-submenu>
+                  <el-submenu :index="item.index" :key="item.index">
+                      <template slot="title">
+                          <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
+                      </template>
+                      <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
+                          <template v-if="isShow(subItem.limit)">
+                            {{ subItem.title }}
+                          </template>
+                      </el-menu-item>
+                  </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
-                      <template v-if="isShow(item.limit)">
-                        <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
-                       </template>
-                    </el-menu-item>
+                  <el-menu-item :index="item.index" :key="item.index">
+                    <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
+                  </el-menu-item>
                 </template>
+              </template>
             </template>
         </el-menu>
     </div>
@@ -35,11 +35,12 @@ export default {
       permission: JSON.parse(sessionStorage.getItem('permission')),
       collapse: false,
       items: [
-        // {
-        //   icon: 'el-icon-star-on',
-        //   index: 'dashboard',
-        //   title: '系统首页'
-        // },
+        {
+          icon: 'el-icon-star-on',
+          index: 'dashboard',
+          title: 'DashBoard',
+          limit: 'none'
+        },
         {
           icon: 'el-icon-tickets',
           index: 'module',
@@ -48,8 +49,9 @@ export default {
         },
         // {
         //   icon: 'el-icon-message',
-        //   index: 'tabs',
-        //   title: this.$t('common.mainPage.message')
+        //   index: 'tab',
+        //   title: this.$t('common.mainPage.message'),
+        //   limit: 'none'
         // },
         {
           icon: 'el-icon-setting',
@@ -57,39 +59,85 @@ export default {
           title: this.$t('common.mainPage.personal'),
           limit: 'none'
         },
+        // {
+        //   icon: 'el-icon-share',
+        //   index: 'users',
+        //   title: this.$t('common.mainPage.users'),
+        //   limit: 'Admin'
+        // },
         {
-          icon: 'el-icon-share',
-          index: 'users',
-          title: this.$t('common.mainPage.users'),
-          limit: 'Admin'
+          icon: 'el-icon-date',
+          index: '4',
+          title: 'ManageMent',
+          limit: 'Admin',
+          subs: [
+            {
+              index: 'users',
+              title: this.$t('common.mainPage.users'),
+              limit: 'Admin'
+            },
+            {
+              index: 'appointList',
+              title: 'AppointList',
+              limit: 'Admin'
+            }
+          ]
+        },
+        {
+          icon: 'el-icon-date',
+          index: '3',
+          title: 'self-culture',
+          limit: 'none',
+          subs: [
+            {
+              index: 'form',
+              title: 'Browse Problem',
+              limit: 'none'
+            },
+            {
+              index: 'editor',
+              title: 'Generate Self Test',
+              limit: 'none'
+            },
+            {
+              index: 'charts',
+              title: 'Test Score Analysis',
+              limit: 'none'
+            }
+          ]
         }
         // {
         //   icon: 'el-icon-date',
-        //   index: '3',
-        //   title: '表单相关',
+        //   index: '4',
+        //   title: 'form',
+        //   limit: 'none',
         //   subs: [
         //     {
         //       index: 'form',
-        //       title: '基本表单'
+        //       title: '基本表单',
+        //       limit: 'none'
         //     },
         //     {
         //       index: 'editor',
-        //       title: '富文本编辑器'
+        //       title: '富文本编辑器',
+        //       limit: 'none'
         //     },
         //     {
         //       index: 'markdown',
-        //       title: 'markdown编辑器'
+        //       title: 'markdown编辑器',
+        //       limit: 'none'
         //     },
         //     {
         //       index: 'upload',
         //       title: '文件上传'
         //     }
         //   ]
-        // },
+        // }
         // {
         //   icon: 'el-icon-star-on',
         //   index: 'charts',
-        //   title: 'schart图表'
+        //   title: 'schart',
+        //   limit: 'none'
         // },
         // {
         //   icon: 'el-icon-rank',
@@ -119,6 +167,7 @@ export default {
     bus.$on('collapse', msg => {
       this.collapse = msg
     })
+    // console.log(this.permission.status)
   },
   methods: {
     isShow (limit) {

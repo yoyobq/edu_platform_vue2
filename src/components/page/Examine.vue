@@ -37,13 +37,16 @@ export default {
     checkLogin () {
       // console.log(this.id + ',' + this.examId)
       // let plist = JSON.parse(permission)
-      if (!this.id === undefined || this.examId === undefined) {
-        this.$message({
-          message: '请勿非法进入考试页面，你的访问已被记录',
-          type: 'warning'
-        })
-        this.$router.push({ path: '/' })
-      }
+      // console.log(this.id)
+      // if (!this.id === undefined || this.examId === undefined) {
+      //   this.$message({
+      //     message: '请勿非法进入考试页面，你的访问已被记录',
+      //     type: 'warning'
+      //   })
+      //   this.$router.push({ path: '/' })
+      // }
+      this.examId = 6
+      this.id = 1
     },
     getData () {
       this.$api.get('api/v1/questions', { 'exam_Id': this.examId, 'acc_Id': this.id }, res => {

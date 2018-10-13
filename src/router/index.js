@@ -8,18 +8,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/module'
+      redirect: '/dashboard'
     },
     {
       path: '/',
       component: resolve => require(['../components/common/Home.vue'], resolve),
       meta: { title: '自述文件' },
       children: [
-        // {
-        //   path: '/dashboard',
-        //   component: resolve => require(['../components/page/Dashboard.vue'], resolve),
-        //   meta: { title: '系统首页' }
-        // },
+        {
+          path: '/dashboard',
+          component: resolve => require(['../components/page/Dashboard.vue'], resolve),
+          meta: { title: 'DashBoard' }
+        },
         {
           path: '/personal',
           component: resolve => require(['../components/page/Personal.vue'], resolve),
@@ -42,57 +42,73 @@ export default new Router({
           component: resolve => require(['../components/page/Users.vue'], resolve),
           meta: { title: 'Users', permission: true }
         },
+        {
+          path: '/appointList',
+          component: resolve => require(['../components/page/AppointList.vue'], resolve),
+          meta: { title: 'AppointList', permission: true }
+        },
         // {
         //   path: '/table',
         //   component: resolve => require(['../components/page/BaseTable.vue'], resolve),
         //   meta: { title: '基础表格' }
         // },
         {
+          path: '/messages',
+          component: resolve => require(['../components/page/Messages.vue'], resolve),
+          meta: { title: 'Messages' }
+        },
+        {
           path: '/tabs',
           component: resolve => require(['../components/page/Tabs.vue'], resolve),
           meta: { title: 'Messages' }
-        }
-        // {
-        //   path: '/form',
-        //   component: resolve => require(['../components/page/BaseForm.vue'], resolve),
-        //   meta: { title: '基本表单' }
-        // },
-        // {
-        //   // 富文本编辑器组件
-        //   path: '/editor',
-        //   component: resolve => require(['../components/page/VueEditor.vue'], resolve),
-        //   meta: { title: '富文本编辑器' }
-        // },
-        // {
-        //   // markdown组件
-        //   path: '/markdown',
-        //   component: resolve => require(['../components/page/Markdown.vue'], resolve),
-        //   meta: { title: 'markdown编辑器' }
-        // },
-        // {
-        //   // 图片上传组件
-        //   path: '/upload',
-        //   component: resolve => require(['../components/page/Upload.vue'], resolve),
-        //   meta: { title: '文件上传' }
-        // },
+        },
+        {
+          path: '/form',
+          component: resolve => require(['../components/page/BaseForm.vue'], resolve),
+          meta: { title: '基本表单' }
+        },
+        {
+          // 富文本编辑器组件
+          path: '/editor',
+          component: resolve => require(['../components/page/VueEditor.vue'], resolve),
+          meta: { title: '富文本编辑器' }
+        },
+        {
+          // markdown组件
+          path: '/markdown',
+          component: resolve => require(['../components/page/Markdown.vue'], resolve),
+          meta: { title: 'markdown编辑器' }
+        },
+        {
+          // 图片上传组件
+          path: '/upload',
+          component: resolve => require(['../components/page/Upload.vue'], resolve),
+          meta: { title: '文件上传' }
+        },
         // {
         //   // vue-schart组件
         //   path: '/charts',
         //   component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
         //   meta: { title: 'schart图表' }
         // },
-        // {
-        //   // 拖拽列表组件
-        //   path: '/drag',
-        //   component: resolve => require(['../components/page/DragList.vue'], resolve),
-        //   meta: { title: '拖拽列表' }
-        // },
-        // {
-        //   // 权限页面
-        //   path: '/permission',
-        //   component: resolve => require(['../components/page/Permission.vue'], resolve),
-        //   meta: { title: '权限测试', permission: true }
-        // }
+        {
+          // vue-schart组件
+          path: '/charts',
+          component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
+          meta: { title: '成绩分析' }
+        },
+        {
+          // 拖拽列表组件
+          path: '/drag',
+          component: resolve => require(['../components/page/DragList.vue'], resolve),
+          meta: { title: '拖拽列表' }
+        },
+        {
+          // 权限页面
+          path: '/permission',
+          component: resolve => require(['../components/page/Permission.vue'], resolve),
+          meta: { title: '权限测试', permission: true }
+        }
       ]
     },
     {
@@ -105,9 +121,14 @@ export default new Router({
     //   component: resolve => require(['../components/signUp/byMail.vue'], resolve),
     //   meta: { allowBack: false }
     // },
+    // {
+    //   path: '/signUpbyAccount',
+    //   component: resolve => require(['../components/signUp/byAccount.vue'], resolve),
+    //   meta: { allowBack: false }
+    // },
     {
-      path: '/signUp',
-      component: resolve => require(['../components/signUp/byAccount.vue'], resolve),
+      path: '/signUpByIdentity',
+      component: resolve => require(['../components/signUp/byIdentity.vue'], resolve),
       meta: { allowBack: false }
     },
     {

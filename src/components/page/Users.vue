@@ -3,13 +3,13 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <!-- <el-breadcrumb-item><i class="el-icon-tickets"></i>{{$t('common.module.module')}}</el-breadcrumb-item> -->
-                <el-breadcrumb-item><i class="el-icon-share"></i>Users</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-share"></i> Users</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
               <el-row>
-                <el-col :span="10">
+                <el-col :span="9">
                   <!-- <el-input v-model="select_word" :placeholder="$t('message.module.phSearch')" class="handle-input mr10"></el-input> -->
                   <el-input v-model="select_word" placeholder="Search by keyword in the Name" class="handle-input mr10"></el-input>
                 </el-col>
@@ -96,6 +96,7 @@ export default {
       this.$api.get('api/v1/informations', null, res => {
         informations = res
         this.$api.get('api/v1/accounts', null, res => {
+          // console.log(res)
           accounts = res
           accounts.forEach(function (item, index) {
             results[index] = {...informations[index], ...item}
@@ -267,7 +268,7 @@ export default {
   }
 
   .handle-input {
-    width: 430px;
+    width: 380px;
     display: inline-block;
   }
   .del-dialog-cnt{

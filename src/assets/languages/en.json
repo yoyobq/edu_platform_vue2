@@ -1,7 +1,7 @@
 {
   "common": {
     "mainPage":{
-      "title": "Management System",
+      "title": "XJTLU Online Judge",
       "fullScreen": "Fullscreen",
       "cancelFull": "Cancel Fullscreen",
       "unread": "unread messages",
@@ -15,14 +15,15 @@
       "closeAll": "Close All"
     },
     "loginPage": {
-      "formTitle": "TA Management System",
+      "formTitle": "XJTLU Online Judge",
       "tabsAccount": "Account Login",
       "tabsEmail": "Email Login",
       "password": "Password",
       "email": "Email",
       "btnLogin": "Sign in",
       "username": "Account",
-      "register": "Join us"
+      "register": "Join us",
+      "verify": "Sign up"
     },
     "signUp": {
       "formTitle": "UESR REGISTRATION",
@@ -58,6 +59,7 @@
       "moduleApply": "Apply",
       "moduleAdd": "Add New",
       "applyFor": "Apply",
+      "checkDetails": "Check Details",
       "modulePublish": "Create TA req.",
       "editPublish": "Edit and publish",
       "moduleEdit": "Edit",
@@ -106,8 +108,9 @@
       "rejectBtn": "Reject",
       "close": "Close",
       "delBtn": "Delete",
-      "markerWeekHour": "Marking hours/week",
-      "taWeekHour": "TA hours/week"
+      "markerWeekHour": "Marking hours",
+      "taWeekHour": "Weekly hours / TA",
+      "attendance": "Attendance"
     }
   },
   "message": {
