@@ -74,7 +74,9 @@ export default {
         // }
         this.$apiv2.get('api/v2/authentications', null, res => {
           console.log(res)
-          this.confirmId()
+          // this.confirmId()
+        }, res => {
+          console.log(res)
         })
       }).catch(() => {
         this.$message({

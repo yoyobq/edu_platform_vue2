@@ -58,12 +58,13 @@ function apiAxios (method, url, params, success, failure) {
       success(res.data)
     })
     .catch((error) => {
-      console.log(error)
       let res = error.response
+      // console.log(res)
       if (res && res.status !== 504) {
-        // console.log(error.response)
-        if (res.data.detail.message) {
-          failure(res.data.detail.message)
+        if (res.data.error) {
+          failure(res.data.error)
+        } else {
+          failure('出错了，请检查服务器日志')
         }
       } else {
         failure('连接超时，请稍待片刻或联系网站管理员')
