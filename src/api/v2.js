@@ -28,8 +28,7 @@ function filterNull (o) {
 /*
   接口处理函数
   这个函数每个项目都是不一样的，我现在调整的是适用于
-  http://127.0.0.1:7001/api 的接口，如果是其他接口
-  需要根据接口的参数进行调整。出错就是简单的alert。
+  http://127.0.0.1:7001/apiv2 的接口.
 */
 
 function apiAxios (method, url, params, success, failure) {

@@ -1,82 +1,88 @@
 <template>
   <div class="login-wrap">
-    <!-- <el-dialog :title="$t('common.signUp.formTitle')" :visible.sync="registerFormVisible" :close-on-click-modal="allowClose" :close-on-press-escape="allowClose" :show-close="allowClose" width="500px">
-      <el-form :model="registerForm" :rules="formRules" ref="registerForm">
-        <el-form-item :label="$t('common.signUp.userName')" :label-width="formLabelWidth" prop="username">
-          <el-input v-model.trim="registerForm.username" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('common.signUp.password')" :label-width="formLabelWidth" prop="password">
-          <el-input :type="registerPassword" v-model.trim="registerForm.password" auto-complete="off">
-            <el-button slot="append" :icon="passwordIcon" @click="changeType()"></el-button>
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="registerFormCancel()">{{$t('common.signUp.registerCancel')}}</el-button>
-        <el-button type="primary" @click="checkInput()">{{$t('common.signUp.registerConfirm')}}</el-button>
-      </div>
-    </el-dialog> -->
+    <chkInfo :chkInfoShow="chkInfoShow" @update:chkInfoShow="chkInfoShow = $event" :data="stuInfo" @update:chkedInfo="chkedInfo = $event"></chkInfo>
+    <createForm :createShow="createShow" @update:createShow="createShow = $event" :data="chkedInfo"></createForm>
   </div>
 </template>
 
 <script>
-const crypto = require('crypto')
 export default {
+  name: 'signUpByIdentity',
+  components: {
+    'chkInfo': resolve => { require(['@/components/signUp/byIdentity/chkInfoDialog.vue'], resolve) },
+    'createForm': resolve => { require(['@/components/signUp/byIdentity/createForm.vue'], resolve) }
+  },
   data: function () {
     return {
-      registerFormVisible: false,
-      registerPassword: 'password',
-      passwordIcon: 'fa fa-eye',
-      allowClose: false,
-      registerForm: {
-        username: '',
-        password: ''
-      },
-      formLabelWidth: '150px',
-      formRules: {
-        username: [
-          { required: true, message: this.$t('message.signUp.inputName'), trigger: 'blur' },
-          {
-            pattern: /^[a-zA-Z0-9_.]{4,16}$/,
-            message: this.$t('message.signUp.invalidName'),
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          { required: true, message: this.$t('message.signUp.inputPassword'), trigger: 'blur' },
-          { min: 6, message: this.$t('message.signUp.minPassword'), trigger: 'blur' }
-        ]
-      }
+      idNumber: '',
+      stuInfo: [],
+      chkedInfo: null,
+      chkInfoShow: false,
+      createShow: false
     }
   },
   created () {
-    // this.signUp()
-    // this.registerFormVisible = true
-    this.confirmId()
+    this.checkId()
+  },
+  watch: {
+    chkInfoShow: function () {
+      if (this.chkInfoShow === false) {
+        if (this.chkedInfo !== null) {
+          // console.log(this.chkedInfo)
+          this.signUp()
+        } else {
+          this.checkId()
+        }
+      }
+    },
+    createShow: function () {
+      if (this.createShow === false && this.chkedInfo !== null) {
+        this.checkInfo()
+      } else {
+        this.signUp()
+      }
+    }
   },
   methods: {
-    confirmId () {
-      this.$prompt(this.$t('message.signUp.inputIdNo'), '第 1 步（共 3 步）', {
+    // 2 显示核对个人信息dialog
+    checkInfo () {
+      this.chkInfoShow = true
+    },
+    // 3 根据chkedInfo注册账户
+    signUp () {
+      this.createShow = true
+    },
+    // 1 弹出输入身份证并检查对应信息messagebox
+    checkId () {
+      this.chkedInfo = null
+      this.stuInfo = null
+      console.log('320586200001043618') // 此号码旧数据中有冗余
+      // this.$prompt(this.$t('message.signUp.inputIdNo'), '第 1 步（共 3 步）', {
+      this.$prompt('', '第 1 步（共 3 步）：' + this.$t('message.signUp.inputIdNo'), {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        // inputPattern: /^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|[xX])$/,
+        inputPattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/,
         inputErrorMessage: '身份证号不完整或格式不正确',
         closeOnClickModal: false,
         closeOnPressEscape: false
       }).then(({ value }) => {
-        this.$message({
-          type: 'success',
-          message: '你的id是: ' + value
-        })
-        // let data = {
-        //   '_csrf': this.$cookies.get('csrfToken'),
-        //   aaa: 1234
-        // }
-        this.$apiv2.get('api/v2/authentications', null, res => {
-          console.log(res)
-          // this.confirmId()
+        this.idNumber = value
+        let data = {
+          '证件号码': this.idNumber
+        }
+        this.$apiv2.get('api/v2/stuFullInfo', data, res => {
+          // 注意，这里返回了一个json数组
+          // console.log(res)
+          this.stuInfo = res
+          this.checkInfo()
         }, res => {
           console.log(res)
+          this.$message({
+            duration: 6000,
+            message: res,
+            type: 'warning'
+          })
+          this.checkId()
         })
       }).catch(() => {
         this.$message({
@@ -84,58 +90,6 @@ export default {
           message: '取消输入'
         })
         this.$router.push('/login')
-      })
-    },
-    changeType () {
-      if (this.registerPassword === 'password') {
-        this.registerPassword = 'text'
-        this.passwordIcon = 'fa fa-eye-slash'
-      } else {
-        this.registerPassword = 'password'
-        this.passwordIcon = 'fa fa-eye'
-      }
-    },
-    registerFormCancel () {
-      this.registerFormVisible = false
-      this.$message({
-        type: 'info',
-        message: '取消输入'
-      })
-      this.$router.push('/login')
-    },
-    checkInput () {
-      this.$refs['registerForm'].validate((valid) => {
-        if (valid) {
-          // console.log(this.registerForm)
-          // 检查帐号是否存在
-          let data = { 'username': this.registerForm.username }
-          this.$api.get('api/v1/authentications', data, res => {
-            // console.log(res)
-            this.$message({
-              type: 'warning',
-              message: this.$t('message.signUp.isFound')
-            })
-          },
-          res => {
-            // 若不存在，登录注册信息
-            let data = {
-              '_csrf': this.$cookies.get('csrfToken'),
-              'username': this.registerForm.username,
-              'password': this.registerForm.password
-            }
-            let sha1 = crypto.createHash('sha1')
-            sha1.update(data.password)
-            data.password = sha1.digest('hex')
-            // console.log(data)
-            this.$api.post('api/v1/authentications', data, res => {
-              this.$message({
-                type: 'success',
-                message: data.username + ' ' + this.$t('message.signUp.isCreated')
-              })
-              this.$router.push('/login')
-            })
-          })
-        }
       })
     }
   }
@@ -149,4 +103,8 @@ export default {
     height:100%;
     background-color: #324157;
 } */
+
+.el-message {
+  z-index: 999;
+}
 </style>
