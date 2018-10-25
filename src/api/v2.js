@@ -1,5 +1,5 @@
 // 配置API接口地址
-let root = '/'
+let root = '/api/v2'
 // 引用axios
 let axios = require('axios')
 // 自定义判断元素类型JS
@@ -60,8 +60,8 @@ function apiAxios (method, url, params, success, failure) {
       let res = error.response
       // console.log(res)
       if (res && res.status !== 504) {
-        if (res.data.error) {
-          failure(res.data.error)
+        if (res) {
+          failure(res)
         } else {
           failure('出错了，请检查服务器日志')
         }

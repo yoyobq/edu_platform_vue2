@@ -99,8 +99,9 @@ export default {
               this.$message({
                 type: 'success',
                 message: data.username + ' ' + this.$t('message.signUp.isCreated')
+              }).then(() => {
+                this.$router.push('/login')
               })
-              this.$router.push('/login')
             })
           })
         }

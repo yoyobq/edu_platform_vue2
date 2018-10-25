@@ -102,8 +102,10 @@ export default {
           // 以上是不用api，以下是调用api
           // 参数说明  url， params, success处理， failure处理
           // 提交登录表单
-          this.$api.get('api/v1/authentications', theForm, res => {
-            // 找到对应帐号
+          this.$api.get('authentications', theForm, res => {
+            // 找到对应帐号后，先清除原有记录（若有），然后进行登录流程
+            console.log(res)
+            this.$session.destroy()
             this.loginSuccess(res[0])
           }, res => {
             // 找不到符合条件的用户账户
@@ -113,27 +115,36 @@ export default {
         }
       })
     },
-    loginSuccess (res) {
-      // 一旦找到符合条件的用户名和密码，记录 uuid 和 id 到 session
+    async loginSuccess (res) {
+      // 记录 uuid 和 id 到 session
       this.setSession(res)
       // let uuid = res[0].uuid
       let id = res.id
+      await this.getStuInfo(id)
       // 设置本次登录时间，记录登录IP
-      let data = { '_csrf': this.$cookies.get('csrfToken') }
-      this.$api.put('api/v1/accounts/' + id, data, res => {
-        // console.log(res)
-        // 获取对应id的用户信息，将信息存在localStorage中，方便调用
-        this.setLocalStorage(id)
-        // 跳转至主页
-        // this.$router.push('/')
+      // let data = { '_csrf': this.$cookies.get('csrfToken') }
+    },
+    getStuInfo (id) {
+      return new Promise((resolve, reject) => {
+        this.$api.get('stuInfos/' + id, null, res => {
+          console.log(res)
+          // 获取对应id的用户信息，将信息存在localStorage中，方便调用
+          // this.setLocalStorage(id)
+          // 跳转至主页
+          // this.$router.push('/')
+          resolve(true)
+        }, res => {
+          console.log(res.data.error)
+          resolve(false)
+        })
       })
     },
     setSession (res) {
-      sessionStorage.setItem('uuid', res.uuid)
-      sessionStorage.setItem('id', res.id)
+      this.$session.set('uuid', res.uuid)
+      this.$session.set('id', res.id)
     },
     setLocalStorage (id) {
-      this.$api.get('api/v1/accounts/' + id, null, res => {
+      this.$api.get('accounts/' + id, null, res => {
         // {id: 1, realName: "卜强", accClassId: 3170103, accClassName: "信息1703", lastLoginTime: null,…}
         localStorage.setItem('pf_realName', res.realName)
         localStorage.setItem('pf_classId', res.accClassId)

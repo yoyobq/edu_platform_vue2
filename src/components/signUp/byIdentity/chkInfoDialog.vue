@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="第 2 步（共 3 步）：请核对并确认你的个人信息" :visible.sync="chkInfoShow" width="685px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+  <el-dialog title="第 2 步（共 3 步）：请核对并确认你的个人信息" :visible.sync="chkInfoShow" width="640px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
     <el-card class="stu-card" v-for="(stuInfo,index) in data" :key="index">
       <div slot="header" class="clearfix">
         <span class="fa fa-user-circle-o  name-text"> {{ stuInfo.姓名 }}</span>
@@ -29,9 +29,19 @@ export default {
       this.$emit('update:chkInfoShow', false)
     },
     signIn (chkedInfo) {
-      this.chkInfoVisable = false
-      this.$emit('update:chkInfoShow', false)
-      this.$emit('update:chkedInfo', chkedInfo)
+      let data = {
+        'idNumber': chkedInfo.证件号码
+      }
+      this.$api.get('stuInfos', data, res => {
+        console.log(res[0].id)
+        this.$message({
+          type: 'info',
+          message: '该学生已注册（ id:' + res[0].id + ' ），若不是本人注册，请及时联系管理员'
+        })
+      }, res => {
+        this.$emit('update:chkInfoShow', false)
+        this.$emit('update:chkedInfo', chkedInfo)
+      })
     }
   },
   watch: {

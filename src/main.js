@@ -16,9 +16,9 @@ import VueI18n from 'vue-i18n' // 国际化插件
 import Moment from 'moment'
 
 Vue.use(apiv1)
-Vue.prototype.$api = apiv1
+Vue.prototype.$apiv1 = apiv1
 Vue.use(apiv2)
-Vue.prototype.$apiv2 = apiv2
+Vue.prototype.$api = apiv2
 
 Vue.use(VueCookies)
 Vue.use(VueSession)

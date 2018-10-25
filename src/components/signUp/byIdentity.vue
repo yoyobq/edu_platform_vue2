@@ -70,16 +70,16 @@ export default {
         let data = {
           '证件号码': this.idNumber
         }
-        this.$apiv2.get('api/v2/stuFullInfo', data, res => {
+        this.$api.get('stuFullInfos', data, res => {
           // 注意，这里返回了一个json数组
           // console.log(res)
           this.stuInfo = res
           this.checkInfo()
         }, res => {
-          console.log(res)
+          // console.log(res)
           this.$message({
             duration: 6000,
-            message: res,
+            message: res.data.error,
             type: 'warning'
           })
           this.checkId()
