@@ -159,11 +159,35 @@ export default {
         })
       })
     },
-    setSession (res) {
+    async setSession (res) {
       this.$session.set('uuid', res.uuid)
       this.$session.set('id', res.id)
-      // 此处permission是临时方案，今后需要有一张permission表配合，并做成数组方便调用
-      this.$session.set('permission', res.permission)
+
+      let permitList = res.permission
+      permitList = JSON.parse(permitList)
+      this.$session.set('permission', await this.computePermission(permitList))
+    },
+    async computePermission (permitList) {
+      let finalPermit = {}
+      for (let permitNo of permitList) {
+        var permit = await this.getPermission(permitNo)
+        // console.log(typeof permit)
+        // forbidden > execute > read > ''
+        permit = JSON.parse(permit)
+        for (let page in permit) {
+          // console.log(permit[page])
+          if (finalPermit[page] === undefined) {
+            finalPermit[page] = permit[page]
+          } else if (permit[page] === 'forbidden') {
+            finalPermit[page] = 'forbidden'
+          } else if (finalPermit[page] !== 'forbidden' && permit[page] === 'execute') {
+            finalPermit[page] = 'execute'
+          } else if (finalPermit[page] !== 'forbidden' && finalPermit[page] !== 'execute' && permit[page] === 'read') {
+            finalPermit[page] = 'read'
+          }
+        }
+      }
+      return finalPermit
     },
     async setLocalStorage (stuInfo, authInfo) {
       // classId: 61 departmentId: 4 id: 2 stuId: 318010501 realName: "测试学生" sex: 0 specialityId: 42
@@ -186,21 +210,22 @@ export default {
       localStorage.setItem('avatarPath', authInfo.avatarPath)
       // 9+4 共13组在 localStorage 中的数据
     },
+    getPermission (permissionId) {
+      return new Promise((resolve, reject) => {
+        this.$api.get('permissions/' + permissionId, null, res => {
+          // let permit = JSON.parse(res.permissionStr)
+          // console.log(permit)
+          resolve(res.permissionStr)
+        }, res => {
+          reject(new Error('获取许可信息出错'))
+        })
+      })
+    },
     signUpByMail () {
       this.$router.push('/signUpByMail')
     },
     signUp () {
       this.$router.push('/signUpByIdentity')
-    },
-    computePermission (permission) {
-      permission = JSON.parse(permission)
-      // console.log(permission)
-      let result = permission[0]
-      for (let i = 1; i < permission.length; i++) {
-        result = {...result, ...permission[i]}
-      }
-      // console.log(typeof result)
-      return JSON.stringify(result)
     },
     getClassName (id) {
       return new Promise((resolve, reject) => {

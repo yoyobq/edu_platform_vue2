@@ -1,30 +1,30 @@
 <template>
-    <div class="sidebar">
-        <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
-            text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
-            <template v-for="item in items">
-              <template v-if="isShow(item.limit)">
-                <template v-if="item.subs">
-                  <el-submenu :index="item.index" :key="item.index">
-                      <template slot="title">
-                          <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
-                      </template>
-                      <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
-                          <template v-if="isShow(subItem.limit)">
-                            {{ subItem.title }}
-                          </template>
-                      </el-menu-item>
-                  </el-submenu>
-                </template>
-                <template v-else>
-                  <el-menu-item :index="item.index" :key="item.index">
-                    <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
-                  </el-menu-item>
-                </template>
+  <div class="sidebar">
+    <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
+      text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
+      <template v-for="item in items">
+        <template v-if="isShow(item.name)">
+          <template v-if="item.subs">
+            <el-submenu :index="item.index" :key="item.index">
+              <template slot="title">
+                <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
               </template>
-            </template>
-        </el-menu>
-    </div>
+              <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
+                <template v-if="isShow(subItem.name)">
+                  {{ subItem.title }}
+                </template>
+              </el-menu-item>
+            </el-submenu>
+          </template>
+          <template v-else>
+            <el-menu-item :index="item.index" :key="item.index">
+              <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
+            </el-menu-item>
+          </template>
+        </template>
+      </template>
+    </el-menu>
+  </div>
 </template>
 
 <script>
@@ -32,18 +32,20 @@ import bus from '../common/bus'
 export default {
   data () {
     return {
-      permission: JSON.parse(sessionStorage.getItem('permission')),
+      permission: this.$session.get('permission'),
       collapse: false,
       items: [
         {
           icon: 'el-icon-star-on',
-          index: 'dashboard',
-          title: 'DashBoard',
+          index: 1,
+          name: 'dashboard',
+          title: '平台首页',
           limit: 'none'
         },
         {
           icon: 'el-icon-tickets',
-          index: 'module',
+          index: 2,
+          name: 'module',
           title: this.$t('common.mainPage.module'),
           limit: 'none'
         },
@@ -69,10 +71,11 @@ export default {
           icon: 'el-icon-date',
           index: '4',
           title: 'ManageMent',
-          limit: 'Admin',
+          limit: 'none',
           subs: [
             {
-              index: 'users',
+              index: 1,
+              name: 'users',
               title: this.$t('common.mainPage.users'),
               limit: 'Admin'
             },
@@ -86,22 +89,22 @@ export default {
         {
           icon: 'el-icon-date',
           index: '3',
-          title: 'self-culture',
+          title: '课程学习',
           limit: 'none',
           subs: [
             {
               index: 'form',
-              title: 'Browse Problem',
+              title: '题库浏览',
               limit: 'none'
             },
             {
               index: 'editor',
-              title: 'Generate Self Test',
+              title: '自测练习',
               limit: 'none'
             },
             {
               index: 'charts',
-              title: 'Test Score Analysis',
+              title: '成绩分析',
               limit: 'none'
             }
           ]
@@ -170,13 +173,13 @@ export default {
     // console.log(this.permission.status)
   },
   methods: {
-    isShow (limit) {
-      if (limit === 'none') {
-        return true
-      } else if (limit === this.permission.status) {
-        return true
+    isShow (page) {
+      switch (this.permission[page]) {
+        case 'forbidden': return false
+        case 'execute': return true
+        case 'read': return true
+        default: return false
       }
-      return false
     }
   }
 }

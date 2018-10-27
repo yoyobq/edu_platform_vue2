@@ -14,22 +14,23 @@
                     </el-tooltip>
                 </div>
                 <!-- 消息中心 -->
-                <!-- <div class="btn-bell">
+                <div class="btn-bell">
                     <el-tooltip effect="dark" :content="message?`有${message}条未读消息`:`消息中心`" placement="bottom">
                         <router-link to="/messages">
                             <i class="el-icon-bell"></i>
                         </router-link>
                     </el-tooltip>
                     <span class="btn-bell-badge" v-if="message"></span>
-                </div> -->
+                </div>
                 <!-- 用户头像 -->
                 <div class="user-avator"><img :src="avatarPic"></div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
-                        {{username}} <i class="el-icon-caret-bottom"></i>
+                        {{ realname }} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
+                        <!-- <el-dropdown-item command="name">{{ username }}</el-dropdown-item> -->
                         <el-dropdown-item command="personal">{{$t('common.mainPage.personal')}}</el-dropdown-item>
                         <!-- <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
                             <el-dropdown-item>项目仓库</el-dropdown-item>
@@ -49,18 +50,20 @@ export default {
       collapse: false,
       fullscreen: false,
       avatarPic: '',
-      name: 'GUEST',
       message: 2
     }
   },
   created () {
-    this.avatarPic = 'static/img/' + localStorage.getItem('pf_avatarPath')
+    this.avatarPic = 'static/img/' + localStorage.getItem('avatarPath')
   },
   computed: {
     username () {
-      // let username = localStorage.getItem('pf_username')
-      let realName = localStorage.getItem('pf_realName')
-      return realName || this.name
+      let username = localStorage.getItem('username')
+      return username || 'GUEST'
+    },
+    realname () {
+      let realname = localStorage.getItem('realName')
+      return realname || 'GUEST'
     }
   },
   methods: {

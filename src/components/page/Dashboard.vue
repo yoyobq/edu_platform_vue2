@@ -1,122 +1,119 @@
 <template>
-    <div class="dash-main">
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-row>
-                    <el-col>
-                        <el-card shadow="hover" class="mgb20">
-                            <div class="user-info">
-                                <img :src="avatarPic" class="user-avator" alt="">
-                                <div class="user-info-cont">
-                                    <div class="user-info-name">{{name}}</div>
-                                    <div>{{className}}</div>
-                                </div>
-                            </div>
-                            <div class="user-info-list">上次登录时间：<span>{{new Date(lastLoginTime).toLocaleString()}}</span></div>
-                            <div class="user-info-list">上次登录地点：<span>{{lastLoginIP}}</span></div>
-                        </el-card>
-                        <el-card shadow="hover">
-                            <div slot="header" class="clearfix">
-                                <span>Learning Progress</span>
-                            </div>
-                            algorithm
-                            <el-progress :percentage="57.2" color="#42b983"></el-progress>
-                            JavaScript
-                            <el-progress :percentage="29.8" color="#f1e05a"></el-progress>
-                            CSS
-                            <el-progress :percentage="11.9"></el-progress>
-                            HTML
-                            <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
-                        </el-card>
-                    </el-col>
-                </el-row>
-            </el-col>
-            <el-col :span="16">
-                <el-row :gutter="20" class="mgb20">
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <i class="el-icon-view grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">3</div>
-                                    <div>待办事项</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <i class="el-icon-message grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">12</div>
-                                    <div>Messages</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-3">
-                                <i class="el-icon-document grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">4</div>
-                                    <div>当前考试</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <el-card shadow="hover" :body-style="{ height: '304px'}">
-                    <div slot="header" class="clearfix">
-                        <span>待办事项</span>
-                        <!-- <el-button style="float: right; padding: 3px 0" type="text">添加</el-button> -->
-                    </div>
-                    <el-table :data="eventList" :show-header="false" height="304" style="width: 100%;font-size:14px;" empty-text="幸苦了，你已经完成了所有任务，请明天再来看看">
-                        <el-table-column width="40">
-                            <template slot-scope="scope">
-                                <el-checkbox></el-checkbox>
-                            </template>
-                        </el-table-column>
-                        <el-table-column width="400">
-                            <template slot-scope="scope" >
-                                <div  class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.exam_title}}</div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column>
-                          <!-- <template slot-scope="scope">
-                            <div v-if = "scope.row.exam_status === 0">
-                              <el-tag size="mini">未开始</el-tag>
-                            </div>
-                            <div v-else-if = "scope.row.exam_status === 1">
-                              <el-tag size="mini" type="warning" >进行中</el-tag>
-                            </div>
-                            <div v-else>
-                              <el-tag size="mini" type="info" >已结束</el-tag>
-                            </div>
-                          </template> -->
-                        </el-table-column>
-                        <el-table-column>
-                            <template slot-scope="scope">
-                              <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">Start</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-card>
-                
+  <div class="dash-main">
+    <el-row :gutter="20">
+      <el-col :span="7">
+        <el-row>
+            <el-col>
+              <el-card shadow="hover" class="mgb20">
+                <div class="user-info">
+                  <img :src="avatarPic" class="user-avator" alt="">
+                  <div class="user-info-cont">
+                    <div class="user-info-name">{{name}}</div>
+                    <div>{{className}}</div>
+                  </div>
+                </div>
+                <div class="user-info-list">上次登录时间：<span>{{new Date(lastLoginTime).toLocaleString()}}</span></div>
+                <div class="user-info-list">上次登录地址：<span>{{lastLoginIP}}</span></div>
+              </el-card>
+              <el-card shadow="hover" class="mgb20">
+                <div slot="header" class="clearfix">
+                  <span>Learning Progress</span>
+                </div>
+                algorithm
+                <el-progress :percentage="57.2" color="#42b983"></el-progress>
+                JavaScript
+                <el-progress :percentage="29.8" color="#f1e05a"></el-progress>
+                CSS
+                <el-progress :percentage="11.9"></el-progress>
+                HTML
+                <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
+              </el-card>
             </el-col>
         </el-row>
-      <el-dialog title="考试信息" :visible.sync="dialogTableVisible">
-        <div class = "exam-info">
-          <p>{{ event.exam_title }}</p>
-          <p>题型：{{ questInfo.type }}，</p>
-          <p>共：{{ questInfo.num }} 道，</p>
-          <p>每题记 {{ questInfo.score }} 分。</p>
-          <p v-if = "score !== null ">得分：{{ score }}</p>
-          <el-button :disabled="isExamEnd" type="success" size="mini" @click= "handelStart()">{{ isExamEnd ? '您已交卷' : (isExamStart ? '继续考试' : '开始考试') }}</el-button>
-        </div>
-      </el-dialog>
-    </div>
+      </el-col>
+      <el-col :span="16">
+        <el-row :gutter="20" class="mgb20">
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-1">
+                <i class="el-icon-view grid-con-icon"></i>
+                <div class="grid-cont-right">
+                  <div class="grid-num">3</div>
+                  <div>待办事项</div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-2">
+                <i class="el-icon-message grid-con-icon"></i>
+                <div class="grid-cont-right">
+                  <div class="grid-num">12</div>
+                  <div>Messages</div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{padding: '0px'}">
+              <div class="grid-content grid-con-3">
+                <i class="el-icon-document grid-con-icon"></i>
+                <div class="grid-cont-right">
+                  <div class="grid-num">4</div>
+                  <div>当前考试</div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-card shadow="hover" :body-style="{ height: '304px'}">
+              <div slot="header" class="clearfix">
+                <span>待办事项</span>
+                <!-- <el-button style="float: right; padding: 3px 0" type="text">添加</el-button> -->
+              </div>
+              <el-table :data="eventList" :show-header="false" height="300" style="width: 100%;font-size:14px;" empty-text="幸苦了，你已经完成了所有任务，请明天再来看看">
+                <el-table-column width="40">
+                  <template slot-scope="scope">
+                    <el-checkbox></el-checkbox>
+                  </template>
+                </el-table-column>
+                <el-table-column>
+                  <template slot-scope="scope" >
+                    <div  class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.exam_title}}</div>
+                  </template>
+                </el-table-column>
+                <el-table-column>
+                  <!-- <template slot-scope="scope">
+                    <div v-if = "scope.row.exam_status === 0">
+                      <el-tag size="mini">未开始</el-tag>
+                    </div>
+                    <div v-else-if = "scope.row.exam_status === 1">
+                      <el-tag size="mini" type="warning" >进行中</el-tag>
+                    </div>
+                    <div v-else>
+                      <el-tag size="mini" type="info" >已结束</el-tag>
+                    </div>
+                  </template> -->
+                </el-table-column>
+                <el-table-column>
+                  <template slot-scope="scope">
+                    <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">Start</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-card>
+          </el-col>
+          <el-col :span="12">
+            <el-card shadow="hover" :body-style="{ height: '362px'}">
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -124,26 +121,26 @@
       name: 'dashboard',
       data () {
         return {
-          name: localStorage.getItem('pf_realName'),
-          // localStorage.getItem('pf_username')
-          classId: localStorage.getItem('pf_classId'),
-          className: localStorage.getItem('pf_className'),
-          lastLoginTime: localStorage.getItem('pf_lastLoginTime'),
-          lastLoginIP: localStorage.getItem('pf_lastLoginIP'),
+          name: localStorage.getItem('realName'),
+          // localStorage.getItem('username')
+          classId: localStorage.getItem('classId'),
+          className: localStorage.getItem('className'),
+          lastLoginTime: localStorage.getItem('lastLoginTime'),
+          lastLoginIP: localStorage.getItem('lastLoginIp'),
           avatarPic: '',
           eventList: [],
           permission: [],
           event: {},
           questInfo: {},
           dialogTableVisible: false,
-          id: sessionStorage.getItem('id'),
+          id: this.$session.get('id'),
           isExamStart: false,
           isExamEnd: false,
           score: null
         }
       },
       created () {
-        this.avatarPic = 'static/img/' + localStorage.getItem('pf_avatarPath')
+        this.avatarPic = 'static/img/' + localStorage.getItem('avatarPath')
         if (this.name === '访客') {
           this.$router.push('/personal')
         }
@@ -293,11 +290,11 @@
   }
 
   .user-info {
-      display: flex;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #ccc;
-      margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
   }
 
   .user-avator {
@@ -330,7 +327,7 @@
 
   .mgb20 {
       margin-bottom: 20px;
-      /* min-width: 350px; */
+      min-width: 350px;
   }
 
   .todo-item {

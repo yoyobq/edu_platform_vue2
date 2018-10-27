@@ -1,24 +1,27 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import axios from 'axios'
+// import axios from 'axios'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 // import '../static/css/theme-green/index.css'; // 浅绿色主题
 import 'font-awesome/css/font-awesome.css'
 import 'babel-polyfill' // ie8兼容
 import VueSession from 'vue-session'
-import apiv1 from './api/v1.js'
+// import apiv1 from './api/v1.js'
 import apiv2 from './api/v2.js'
+import mjson from './api/mjson.js'
 import VueCookies from 'vue-cookies'
 import VueI18n from 'vue-i18n' // 国际化插件
 // import Crypto from 'crypto'
 import Moment from 'moment'
 
-Vue.use(apiv1)
-Vue.prototype.$apiv1 = apiv1
+// Vue.use(apiv1)
+// Vue.prototype.$apiv1 = apiv1
 Vue.use(apiv2)
 Vue.prototype.$api = apiv2
+Vue.use(mjson)
+Vue.prototype.$mjson = mjson
 
 Vue.use(VueCookies)
 Vue.use(VueSession)
@@ -26,7 +29,7 @@ Vue.use(ElementUI, { size: 'small' })
 Vue.use(VueI18n)
 // Vue.use(Crypto)
 Vue.prototype.$moment = Moment
-Vue.prototype.$axios = axios
+// Vue.prototype.$axios = axios
 
 // 使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
