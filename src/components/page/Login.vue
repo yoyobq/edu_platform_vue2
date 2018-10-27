@@ -103,36 +103,56 @@ export default {
           // 参数说明  url， params, success处理， failure处理
           // 提交登录表单
           this.$api.get('authentications', theForm, res => {
-            // 找到对应帐号后，先清除原有记录（若有），然后进行登录流程
-            console.log(res)
+            // 找到对应帐号后，先强制清除原有session 及 localStorage 记录（若有），
+            // 注意 session保存在服务端，sessionStorage保存在客户端，此间区别要厘清
+            // 本站点对session的处理，调用了 vue-session ，详见npm说明文档7
             this.$session.destroy()
+            localStorage.clear()
+            // 进入登录流程
             this.loginSuccess(res[0])
           }, res => {
             // 找不到符合条件的用户账户
-            // console.log(res)
-            this.$message.error(this.$t('message.loginPage.notFound'))
+            this.$message.error(res.data.error)
           })
         }
       })
     },
-    async loginSuccess (res) {
+    async loginSuccess (authInfo) {
       // 记录 uuid 和 id 到 session
-      this.setSession(res)
-      // let uuid = res[0].uuid
-      let id = res.id
-      await this.getStuInfo(id)
+      this.setSession(authInfo)
+      let id = authInfo.id
+      // 根据 id 获取用户基本信息
+      // 此处今后应该添加教师信息的分别获取
+      const stuInfo = await this.getStuInfo(id)
+      if (stuInfo) {
+        // 设置登录信息和基本信息到localStorage
+        this.setLocalStorage(stuInfo, authInfo)
+        // 写入本次登录的IP和时间
+        if (await this.setLoginRecord(id)) {
+          // 全部登录流程完成，跳转至主页
+          this.$router.push('/')
+        }
+      } else {
+        // 此处为临时处理，请及时修改
+        console.log('服务器错误，请重试')
+      }
+    },
+    setLoginRecord (id) {
       // 设置本次登录时间，记录登录IP
-      // let data = { '_csrf': this.$cookies.get('csrfToken') }
+      return new Promise((resolve, reject) => {
+        let data = { '_csrf': this.$cookies.get('csrfToken') }
+        this.$api.put('authentications/' + id, data, res => {
+          resolve(true)
+        }, res => {
+          resolve(false)
+        })
+      })
     },
     getStuInfo (id) {
       return new Promise((resolve, reject) => {
         this.$api.get('stuInfos/' + id, null, res => {
-          console.log(res)
           // 获取对应id的用户信息，将信息存在localStorage中，方便调用
-          // this.setLocalStorage(id)
-          // 跳转至主页
-          // this.$router.push('/')
-          resolve(true)
+          resolve(res)
         }, res => {
           console.log(res.data.error)
           resolve(false)
@@ -142,19 +162,29 @@ export default {
     setSession (res) {
       this.$session.set('uuid', res.uuid)
       this.$session.set('id', res.id)
+      // 此处permission是临时方案，今后需要有一张permission表配合，并做成数组方便调用
+      this.$session.set('permission', res.permission)
     },
-    setLocalStorage (id) {
-      this.$api.get('accounts/' + id, null, res => {
-        // {id: 1, realName: "卜强", accClassId: 3170103, accClassName: "信息1703", lastLoginTime: null,…}
-        localStorage.setItem('pf_realName', res.realName)
-        localStorage.setItem('pf_classId', res.accClassId)
-        localStorage.setItem('pf_className', res.accClassName)
-        localStorage.setItem('pf_lastLoginTime', res.lastLoginTime)
-        localStorage.setItem('pf_lastLoginIP', res.lastLoginIP)
-        localStorage.setItem('pf_avatarPath', res.avatarPath)
-        sessionStorage.setItem('permission', this.computePermission(res.permission))
-        this.$router.push('/')
-      })
+    async setLocalStorage (stuInfo, authInfo) {
+      // classId: 61 departmentId: 4 id: 2 stuId: 318010501 realName: "测试学生" sex: 0 specialityId: 42
+      // isInSchoolRoll: 1 isInternship: 0 isStay: 1 isStuding: 1  specialityId: 42  eduBack: "三校生" grade: "2018" idNumber: "32050319840113176X"
+      // 以下这种做法有个很大的缺点，每一个用户登录数据库都要访问数据库4，5次，
+      // 并涉及到5张表里，以后有时间了需要做一个view，简化固定数据的访问过程
+      localStorage.setItem('realName', stuInfo.realName)
+      localStorage.setItem('sex', stuInfo.sex)
+      localStorage.setItem('stuId', stuInfo.stuId)
+      localStorage.setItem('classId', stuInfo.classId)
+      localStorage.setItem('className', await this.getClassName(stuInfo.classId))
+      localStorage.setItem('departmentId', stuInfo.departmentId)
+      localStorage.setItem('departmentName', await this.getDepartmentName(stuInfo.departmentId))
+      localStorage.setItem('specialityId', stuInfo.specialityId)
+      localStorage.setItem('specName', await this.getSpecName(stuInfo.specialityId))
+
+      localStorage.setItem('email', authInfo.email)
+      localStorage.setItem('lastLoginIp', authInfo.lastLoginIp)
+      localStorage.setItem('lastLoginTime', authInfo.lastLoginTime)
+      localStorage.setItem('avatarPath', authInfo.avatarPath)
+      // 9+4 共13组在 localStorage 中的数据
     },
     signUpByMail () {
       this.$router.push('/signUpByMail')
@@ -171,6 +201,36 @@ export default {
       }
       // console.log(typeof result)
       return JSON.stringify(result)
+    },
+    getClassName (id) {
+      return new Promise((resolve, reject) => {
+        this.$api.get('classInfos/' + id, null, res => {
+          // 此处请注意 根据eggjs的RESTful接口设定，通过id获取信息利用的是
+          // 对应 controllor 的 show() 方法，因此返回的是唯一行，不可能是多行
+          // 因此 返回的不是数组，而是单行的json字符串
+          resolve(res.className)
+        }, res => {
+          reject(new Error('获取班级信息出错'))
+        })
+      })
+    },
+    getDepartmentName (id) {
+      return new Promise((resolve, reject) => {
+        this.$api.get('departments/' + id, null, res => {
+          resolve(res.departmentName)
+        }, res => {
+          reject(new Error('获取系部信息出错'))
+        })
+      })
+    },
+    getSpecName (id) {
+      return new Promise((resolve, reject) => {
+        this.$api.get('specialities/' + id, null, res => {
+          resolve(res.specName)
+        }, res => {
+          reject(new Error('获取专业信息出错'))
+        })
+      })
     }
   }
 }

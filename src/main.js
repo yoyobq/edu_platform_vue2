@@ -32,15 +32,18 @@ Vue.prototype.$axios = axios
 router.beforeEach((to, from, next) => {
   const role = JSON.parse(sessionStorage.getItem('permission'))
   // 若是注册登录页面，无须验证session
+  let session = JSON.parse(sessionStorage.getItem('vue-session-key'))
+  // console.log(session)
   if (to.path === '/signUpByMail' || to.path === '/signUpByAccount' || to.path === '/signUpByIdentity' || to.path === '/login') {
     next()
   // 否则验证session是否存在，不存在就去登录页面
-  } else if (sessionStorage.getItem('id') === null) {
+  } else if (session === null) {
+    console.log(session)
     next('/login')
   // session中的permission不存在
-  } else if (!role && to.path !== '/login') {
-    next('/login')
-  // permission存在但目的地是login
+  // } else if (!role && to.path !== '/login') {
+  //   next('/login')
+  // // permission存在但目的地是login
   } else if (role && to.path === '/login') {
     next('/')
   } else if (to.meta.permission) {

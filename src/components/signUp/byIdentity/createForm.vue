@@ -101,7 +101,7 @@ export default {
       return new Promise((resolve, reject) => {
         this.$refs['authInfo'].validate(async (valid) => {
           if (valid) {
-            // console.log(this.authInfo)
+            console.log(this.authInfo)
             // 检查帐号是否存在
             if (await this.checkUsername()) {
               this.$message({
@@ -178,7 +178,7 @@ export default {
         departmentName: departmentName
       }
       return new Promise((resolve, reject) => {
-        this.$api.get('departMents', data, res => {
+        this.$api.get('departments', data, res => {
           resolve(res[0].id)
         }, res => {
           reject(new Error('获取系部信息出错'))

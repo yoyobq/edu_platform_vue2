@@ -57,16 +57,22 @@ function apiAxios (method, url, params, success, failure) {
       success(res.data)
     })
     .catch((error) => {
+      // 关于错误的处理机制有两种思路
+      // 服务器端有关错误的文字提示根据api的设计规则是存放在 res data.error 中的
+      // 有关错误的 html 状态码是存放在 res.status 中的
+      // 第一种思路，直接返回 res.data ，那么客户界面就感知不到 res.status
+      // 第二种思路，返回 res那么客户界面就可以通过  res.data.error获取错误提示，res.status 获取错误代码
+      // 哪种好呢？暂时还是选择第二种，便于客户端界面判断是请求错误，还是服务器错误
       let res = error.response
       // console.log(res)
       if (res && res.status !== 504) {
         if (res) {
           failure(res)
         } else {
-          failure('出错了，请检查服务器日志')
+          failure({status: 500, data: {error: '出错了，请检查服务器日志'}})
         }
       } else {
-        failure('连接超时，请稍待片刻或联系网站管理员')
+        failure({status: 504, data: {error: '连接超时或数据服务停机，请稍待或联系管理员(信息工程系卜强)'}})
       }
     })
 }
