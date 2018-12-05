@@ -13,17 +13,17 @@ export default new Router({
     {
       path: '/',
       component: resolve => require(['../components/common/Home.vue'], resolve),
-      meta: { title: '自述文件' },
+      meta: { title: '框架' },
       children: [
         {
           path: '/dashboard',
           component: resolve => require(['../components/page/Dashboard.vue'], resolve),
-          meta: { title: 'DashBoard' }
+          meta: { title: '平台首页' }
         },
         {
           path: '/personal',
           component: resolve => require(['../components/page/Personal.vue'], resolve),
-          meta: { title: 'Settings' }
+          meta: { title: '个人设置' }
         },
         {
           path: '/module',
@@ -38,25 +38,38 @@ export default new Router({
           // ]
         },
         {
+          path: '/messages',
+          component: resolve => require(['../components/page/Messages.vue'], resolve),
+          meta: { title: '站内消息' }
+        },
+        {
           path: '/users',
           component: resolve => require(['../components/page/Users.vue'], resolve),
           meta: { title: 'Users', permission: true }
         },
         {
-          path: '/appointList',
-          component: resolve => require(['../components/page/AppointList.vue'], resolve),
-          meta: { title: 'AppointList', permission: true }
+          // 题库一览
+          path: '/questLibList',
+          component: resolve => require(['../components/page/QuestLibList.vue'], resolve),
+          meta: { title: '题库一览', keepAlive: false }
+        },
+        {
+          path: '/exercise',
+          name: 'exercise',
+          component: resolve => require(['../components/page/Exercise.vue'], resolve),
+          meta: { title: '题库练习', keepAlive: false }
+        },
+        {
+          // 拖拽列表组件
+          path: '/selfExam',
+          component: resolve => require(['../components/page/SelfExam.vue'], resolve),
+          meta: { title: '自考自测', keepAlive: false }
         },
         // {
         //   path: '/table',
         //   component: resolve => require(['../components/page/BaseTable.vue'], resolve),
         //   meta: { title: '基础表格' }
         // },
-        {
-          path: '/messages',
-          component: resolve => require(['../components/page/Messages.vue'], resolve),
-          meta: { title: 'Messages' }
-        },
         {
           path: '/tabs',
           component: resolve => require(['../components/page/Tabs.vue'], resolve),
@@ -97,6 +110,7 @@ export default new Router({
           component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
           meta: { title: '成绩分析' }
         },
+
         {
           // 拖拽列表组件
           path: '/drag',
@@ -114,7 +128,7 @@ export default new Router({
     {
       path: '/login',
       component: resolve => require(['../components/page/Login.vue'], resolve),
-      meta: { allowBack: false }
+      meta: { allowBack: false, needLogin: false }
     },
     // {
     //   path: '/signUpByMail',
@@ -129,7 +143,7 @@ export default new Router({
     {
       path: '/signUpByIdentity',
       component: resolve => require(['../components/signUp/byIdentity.vue'], resolve),
-      meta: { allowBack: false }
+      meta: { allowBack: false, needLogin: false }
     },
     {
       path: '/examine',

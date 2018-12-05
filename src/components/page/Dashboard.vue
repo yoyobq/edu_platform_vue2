@@ -8,7 +8,7 @@
                 <div class="user-info">
                   <img :src="avatarPic" class="user-avator" alt="">
                   <div class="user-info-cont">
-                    <div class="user-info-name">{{name}}</div>
+                    <div class="user-info-name">{{ realName }}</div>
                     <div>{{className}}</div>
                   </div>
                 </div>
@@ -17,16 +17,14 @@
               </el-card>
               <el-card shadow="hover" class="mgb20">
                 <div slot="header" class="clearfix">
-                  <span>Learning Progress</span>
+                  <span>学习进度</span>
                 </div>
-                algorithm
-                <el-progress :percentage="57.2" color="#42b983"></el-progress>
-                JavaScript
-                <el-progress :percentage="29.8" color="#f1e05a"></el-progress>
-                CSS
-                <el-progress :percentage="11.9"></el-progress>
-                HTML
-                <el-progress :percentage="1.1" color="#f56c6c"></el-progress>
+                网页设计
+                <el-progress :percentage="14" color="#42b983"></el-progress>
+                Liunx基础
+                <el-progress :percentage="67" color="#f1e05a"></el-progress>
+                省统考
+                <el-progress :percentage="9"></el-progress>
               </el-card>
             </el-col>
         </el-row>
@@ -38,7 +36,7 @@
               <div class="grid-content grid-con-1">
                 <i class="el-icon-view grid-con-icon"></i>
                 <div class="grid-cont-right">
-                  <div class="grid-num">3</div>
+                  <div class="grid-num">0</div>
                   <div>待办事项</div>
                 </div>
               </div>
@@ -49,8 +47,8 @@
               <div class="grid-content grid-con-2">
                 <i class="el-icon-message grid-con-icon"></i>
                 <div class="grid-cont-right">
-                  <div class="grid-num">12</div>
-                  <div>Messages</div>
+                  <div class="grid-num">2</div>
+                  <div>消息</div>
                 </div>
               </div>
             </el-card>
@@ -60,7 +58,7 @@
               <div class="grid-content grid-con-3">
                 <i class="el-icon-document grid-con-icon"></i>
                 <div class="grid-cont-right">
-                  <div class="grid-num">4</div>
+                  <div class="grid-num">0</div>
                   <div>当前考试</div>
                 </div>
               </div>
@@ -86,19 +84,6 @@
                   </template>
                 </el-table-column>
                 <el-table-column>
-                  <!-- <template slot-scope="scope">
-                    <div v-if = "scope.row.exam_status === 0">
-                      <el-tag size="mini">未开始</el-tag>
-                    </div>
-                    <div v-else-if = "scope.row.exam_status === 1">
-                      <el-tag size="mini" type="warning" >进行中</el-tag>
-                    </div>
-                    <div v-else>
-                      <el-tag size="mini" type="info" >已结束</el-tag>
-                    </div>
-                  </template> -->
-                </el-table-column>
-                <el-table-column>
                   <template slot-scope="scope">
                     <el-button type="success" size="mini" @click= "handleEdit(scope.$index, scope.row)">Start</el-button>
                   </template>
@@ -107,7 +92,13 @@
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card shadow="hover" :body-style="{ height: '362px'}">
+            <el-card shadow="hover" >
+              <div slot="header" class="clearfix">
+                <span>重要新闻</span>
+                <el-table :data="newsList" :show-header="false" height="300" style="width: 100%;font-size:14px;" >
+                </el-table>
+                <!-- <el-button style="float: right; padding: 3px 0" type="text">添加</el-button> -->
+              </div>
             </el-card>
           </el-col>
         </el-row>
@@ -121,113 +112,103 @@
       name: 'dashboard',
       data () {
         return {
-          name: localStorage.getItem('realName'),
+          realName: localStorage.getItem('realName'),
           // localStorage.getItem('username')
           classId: localStorage.getItem('classId'),
           className: localStorage.getItem('className'),
           lastLoginTime: localStorage.getItem('lastLoginTime'),
           lastLoginIP: localStorage.getItem('lastLoginIp'),
-          avatarPic: '',
+          avatarPic: localStorage.getItem('avatarPath'),
           eventList: [],
+          newsList: [],
           permission: [],
           event: {},
           questInfo: {},
           dialogTableVisible: false,
-          id: this.$session.get('id'),
+          id: sessionStorage.getItem('id'),
           isExamStart: false,
           isExamEnd: false,
           score: null
         }
       },
       created () {
-        this.avatarPic = 'static/img/' + localStorage.getItem('avatarPath')
-        if (this.name === '访客') {
-          this.$router.push('/personal')
-        }
-        this.getExamList()
-        console.log(this.permission)
-        if (this.permission.index) {
-          this.$router.push('/' + this.permission.index)
-        }
+        console.log(this.avatarPic)
       },
       methods: {
-        createRecord () {
-          // 在scorelist中寻找对应考题
-          this.$api.get('api/v1/accounts/' + this.id + '/scoreLists/' + this.event.exam_id, null,
-            res => {
-              // 如果可以找到,判断是否已经交卷
-              if (res.sco_SubmitTime === null) {
-                // 未交卷
-                sessionStorage.set('examid', this.event.exam_id)
-                this.isExamStart = true
-              } else {
-                // 已交卷，显示得分
-                this.isExamEnd = true
-                if (res.sco_score === null) {
-                  this.score = 0
-                } else {
-                  this.score = res.sco_score
-                }
-              }
-            }, res => {
-            // 如果找不到考试记录，则生成一场新的考试，先生成考题
-              let data = {
-                '_csrf': this.$cookies.getItem('csrfToken'),
-                gid: this.questInfo.gid,
-                num: this.questInfo.num,
-                score: this.questInfo.score,
-                id: this.id,
-                examId: this.event.exam_id
-              }
-              // console.log(data)
-              this.$api.post('api/v1/examRecords', data, res => {
-              // 再生成考试记录
-                let dataScoreList = {
-                  '_csrf': this.$cookies.get('csrfToken'),
-                  examId: this.event.exam_id
-                }
-                this.$api.post('api/v1/accounts/' + this.id + '/scoreLists/', dataScoreList, res => {
-                  if (res === 'Created') {
-                    sessionStorage.setItem('examid', this.event.exam_id)
-                  }
-                }, res => {})
-              })
-            })
-          // console.log(data)
-        },
-        getExamList () {
-          // 根据班级获取考试
-          // let data = {
-          //   // '_csrf': this.$cookies.get('csrfToken')
-          // }
-          this.$api.get('api/v1/classes/' + this.classId + '/examLists', null, res => {
-            this.eventList = res
-            // console.log(res)
-          }, res => {
-            console.log(res)
-          })
-        },
-        handleEdit (index, row) {
-          // console.log(index)
-          this.score = null
-          this.isExamEnd = false
-          this.isExamStart = false
-          sessionStorage.setItem('examid', this.event.exam_id)
-          this.event = row
-          this.questInfo = JSON.parse(this.event.exam_questInfo)
-          this.questInfo.type = '选择题'
-          this.createRecord()
-          this.dialogTableVisible = true
-        },
-        handelStart () {
-          console.log(sessionStorage.getItem('examid'))
-          this.$router.push('/Examine')
-        }
+        // createRecord () {
+        // 在scorelist中寻找对应考题
+        // this.$api.get('api/v1/accounts/' + this.id + '/scoreLists/' + this.event.exam_id, null,
+        //   res => {
+        //     // 如果可以找到,判断是否已经交卷
+        //     if (res.sco_SubmitTime === null) {
+        //       // 未交卷
+        //       sessionStorage.set('examid', this.event.exam_id)
+        //       this.isExamStart = true
+        //     } else {
+        //       // 已交卷，显示得分
+        //       this.isExamEnd = true
+        //       if (res.sco_score === null) {
+        //         this.score = 0
+        //       } else {
+        //         this.score = res.sco_score
+        //       }
+        //     }
+        //   }, res => {
+        //   // 如果找不到考试记录，则生成一场新的考试，先生成考题
+        //     let data = {
+        //       '_csrf': this.$cookies.getItem('csrfToken'),
+        //       gid: this.questInfo.gid,
+        //       num: this.questInfo.num,
+        //       score: this.questInfo.score,
+        //       id: this.id,
+        //       examId: this.event.exam_id
+        //     }
+        //     // console.log(data)
+        //     this.$api.post('api/v1/examRecords', data, res => {
+        //     // 再生成考试记录
+        //       let dataScoreList = {
+        //         '_csrf': this.$cookies.get('csrfToken'),
+        //         examId: this.event.exam_id
+        //       }
+        //       this.$api.post('api/v1/accounts/' + this.id + '/scoreLists/', dataScoreList, res => {
+        //         if (res === 'Created') {
+        //           sessionStorage.setItem('examid', this.event.exam_id)
+        //         }
+        //       }, res => {})
+        //     })
+        //   })
+        // // console.log(data)
+        // },
+        // getExamList () {
+        // 根据班级获取考试
+        // let data = {
+        //   // '_csrf': this.$cookies.get('csrfToken')
+        // }
+        // this.$api.get('api/v1/classes/' + this.classId + '/examLists', null, res => {
+        //   this.eventList = res
+        //   // console.log(res)
+        // }, res => {
+        //   console.log(res)
+        // })
+        // },
+        // handleEdit (index, row) {
+        //   // console.log(index)
+        //   this.score = null
+        //   this.isExamEnd = false
+        //   this.isExamStart = false
+        //   sessionStorage.setItem('examid', this.event.exam_id)
+        //   this.event = row
+        //   this.questInfo = JSON.parse(this.event.exam_questInfo)
+        //   this.questInfo.type = '选择题'
+        //   this.createRecord()
+        //   this.dialogTableVisible = true
+        // },
+        // handelStart () {
+        //   console.log(sessionStorage.getItem('examid'))
+        //   this.$router.push('/Examine')
+        // }
       },
       computed: {
-        role () {
-          return this.name === '卜强' ? '超级管理员' : '普通用户'
-        }
       }
     }
 </script>

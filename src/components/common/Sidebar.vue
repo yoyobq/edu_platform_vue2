@@ -3,20 +3,24 @@
     <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
       text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
       <template v-for="item in items">
-        <template v-if="isShow(item.name)">
+        <template v-if="isShow(item.index)">
           <template v-if="item.subs">
+          <!-- 有次级目录 -->
             <el-submenu :index="item.index" :key="item.index">
+              <!-- 一级目录 -->
               <template slot="title">
                 <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
               </template>
+              <!-- 次级目录 -->
               <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.index">
-                <template v-if="isShow(subItem.name)">
+                <template v-if="isShow(subItem.index)">
                   {{ subItem.title }}
                 </template>
               </el-menu-item>
             </el-submenu>
           </template>
           <template v-else>
+          <!-- 无次级目录 -->
             <el-menu-item :index="item.index" :key="item.index">
               <i :class="item.icon"></i><span slot="title">{{ item.title }}</span>
             </el-menu-item>
@@ -32,34 +36,14 @@ import bus from '../common/bus'
 export default {
   data () {
     return {
-      permission: this.$session.get('permission'),
+      permission: sessionStorage.getItem('permission'),
       collapse: false,
+      // 目前采用了固定菜单的形式，从长远看，菜单应该也从数据库获取
       items: [
         {
           icon: 'el-icon-star-on',
-          index: 1,
-          name: 'dashboard',
-          title: '平台首页',
-          limit: 'none'
-        },
-        {
-          icon: 'el-icon-tickets',
-          index: 2,
-          name: 'module',
-          title: this.$t('common.mainPage.module'),
-          limit: 'none'
-        },
-        // {
-        //   icon: 'el-icon-message',
-        //   index: 'tab',
-        //   title: this.$t('common.mainPage.message'),
-        //   limit: 'none'
-        // },
-        {
-          icon: 'el-icon-setting',
-          index: 'personal',
-          title: this.$t('common.mainPage.personal'),
-          limit: 'none'
+          index: 'dashboard',
+          title: '平台首页'
         },
         // {
         //   icon: 'el-icon-share',
@@ -69,94 +53,28 @@ export default {
         // },
         {
           icon: 'el-icon-date',
-          index: '4',
-          title: 'ManageMent',
-          limit: 'none',
+          index: '3',
+          title: '课程学习',
           subs: [
             {
-              index: 1,
-              name: 'users',
-              title: this.$t('common.mainPage.users'),
-              limit: 'Admin'
+              index: 'questLibList',
+              title: '题库一览'
             },
             {
-              index: 'appointList',
-              title: 'AppointList',
-              limit: 'Admin'
+              index: 'selfExam',
+              title: '自考自测'
+            },
+            {
+              index: 'charts',
+              title: '成绩分析'
             }
           ]
         },
         {
-          icon: 'el-icon-date',
-          index: '3',
-          title: '课程学习',
-          limit: 'none',
-          subs: [
-            {
-              index: 'form',
-              title: '题库浏览',
-              limit: 'none'
-            },
-            {
-              index: 'editor',
-              title: '自测练习',
-              limit: 'none'
-            },
-            {
-              index: 'charts',
-              title: '成绩分析',
-              limit: 'none'
-            }
-          ]
+          icon: 'el-icon-setting',
+          index: 'personal',
+          title: '个人设置'
         }
-        // {
-        //   icon: 'el-icon-date',
-        //   index: '4',
-        //   title: 'form',
-        //   limit: 'none',
-        //   subs: [
-        //     {
-        //       index: 'form',
-        //       title: '基本表单',
-        //       limit: 'none'
-        //     },
-        //     {
-        //       index: 'editor',
-        //       title: '富文本编辑器',
-        //       limit: 'none'
-        //     },
-        //     {
-        //       index: 'markdown',
-        //       title: 'markdown编辑器',
-        //       limit: 'none'
-        //     },
-        //     {
-        //       index: 'upload',
-        //       title: '文件上传'
-        //     }
-        //   ]
-        // }
-        // {
-        //   icon: 'el-icon-star-on',
-        //   index: 'charts',
-        //   title: 'schart',
-        //   limit: 'none'
-        // },
-        // {
-        //   icon: 'el-icon-rank',
-        //   index: 'drag',
-        //   title: '拖拽列表'
-        // },
-        // {
-        //   icon: 'el-icon-warning',
-        //   index: 'permission',
-        //   title: '权限测试'
-        // },
-        // {
-        //   icon: 'el-icon-error',
-        //   index: '404',
-        //   title: '404页面'
-        // }
       ]
     }
   },
@@ -174,12 +92,13 @@ export default {
   },
   methods: {
     isShow (page) {
-      switch (this.permission[page]) {
-        case 'forbidden': return false
-        case 'execute': return true
-        case 'read': return true
-        default: return false
-      }
+      // switch (this.permission[page]) {
+      //   case 'forbidden': return false
+      //   case 'execute': return true
+      //   case 'read': return true
+      //   default: return false
+      // }
+      return true
     }
   }
 }

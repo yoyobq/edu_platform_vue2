@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo">XJTLU Online Judge</div>
+        <div class="logo">SSTS 智能教学平台</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -53,8 +53,9 @@ export default {
       message: 2
     }
   },
-  created () {
-    this.avatarPic = 'static/img/' + localStorage.getItem('avatarPath')
+  async created () {
+    this.avatarPic = localStorage.getItem('avatarPath')
+    console.log(this.avatarPic)
   },
   computed: {
     username () {

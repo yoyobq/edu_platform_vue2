@@ -106,7 +106,7 @@ export default {
             // 找到对应帐号后，先强制清除原有session 及 localStorage 记录（若有），
             // 注意 session保存在服务端，sessionStorage保存在客户端，此间区别要厘清
             // 本站点对session的处理，调用了 vue-session ，详见npm说明文档7
-            this.$session.destroy()
+            sessionStorage.clear()
             localStorage.clear()
             // 进入登录流程
             this.loginSuccess(res[0])
@@ -126,7 +126,7 @@ export default {
       const stuInfo = await this.getStuInfo(id)
       if (stuInfo) {
         // 设置登录信息和基本信息到localStorage
-        this.setLocalStorage(stuInfo, authInfo)
+        await this.setLocalStorage(stuInfo, authInfo)
         // 写入本次登录的IP和时间
         if (await this.setLoginRecord(id)) {
           // 全部登录流程完成，跳转至主页
@@ -160,12 +160,13 @@ export default {
       })
     },
     async setSession (res) {
-      this.$session.set('uuid', res.uuid)
-      this.$session.set('id', res.id)
+      sessionStorage.setItem('uuid', res.uuid)
+      sessionStorage.setItem('id', res.id)
 
       let permitList = res.permission
       permitList = JSON.parse(permitList)
-      this.$session.set('permission', await this.computePermission(permitList))
+      let permissionStr = JSON.stringify(await this.computePermission(permitList))
+      sessionStorage.setItem('permission', permissionStr)
     },
     async computePermission (permitList) {
       let finalPermit = {}
@@ -189,26 +190,29 @@ export default {
       }
       return finalPermit
     },
-    async setLocalStorage (stuInfo, authInfo) {
+    setLocalStorage (stuInfo, authInfo) {
       // classId: 61 departmentId: 4 id: 2 stuId: 318010501 realName: "测试学生" sex: 0 specialityId: 42
       // isInSchoolRoll: 1 isInternship: 0 isStay: 1 isStuding: 1  specialityId: 42  eduBack: "三校生" grade: "2018" idNumber: "32050319840113176X"
       // 以下这种做法有个很大的缺点，每一个用户登录数据库都要访问数据库4，5次，
       // 并涉及到5张表里，以后有时间了需要做一个view，简化固定数据的访问过程
-      localStorage.setItem('realName', stuInfo.realName)
-      localStorage.setItem('sex', stuInfo.sex)
-      localStorage.setItem('stuId', stuInfo.stuId)
-      localStorage.setItem('classId', stuInfo.classId)
-      localStorage.setItem('className', await this.getClassName(stuInfo.classId))
-      localStorage.setItem('departmentId', stuInfo.departmentId)
-      localStorage.setItem('departmentName', await this.getDepartmentName(stuInfo.departmentId))
-      localStorage.setItem('specialityId', stuInfo.specialityId)
-      localStorage.setItem('specName', await this.getSpecName(stuInfo.specialityId))
+      return new Promise(async (resolve, reject) => {
+        localStorage.setItem('realName', stuInfo.realName)
+        localStorage.setItem('sex', stuInfo.sex)
+        localStorage.setItem('stuId', stuInfo.stuId)
+        localStorage.setItem('classId', stuInfo.classId)
+        localStorage.setItem('className', await this.getClassName(stuInfo.classId))
+        localStorage.setItem('departmentId', stuInfo.departmentId)
+        localStorage.setItem('departmentName', await this.getDepartmentName(stuInfo.departmentId))
+        localStorage.setItem('specialityId', stuInfo.specialityId)
+        localStorage.setItem('specName', await this.getSpecName(stuInfo.specialityId))
 
-      localStorage.setItem('email', authInfo.email)
-      localStorage.setItem('lastLoginIp', authInfo.lastLoginIp)
-      localStorage.setItem('lastLoginTime', authInfo.lastLoginTime)
-      localStorage.setItem('avatarPath', authInfo.avatarPath)
-      // 9+4 共13组在 localStorage 中的数据
+        localStorage.setItem('email', authInfo.email)
+        localStorage.setItem('lastLoginIp', authInfo.lastLoginIp)
+        localStorage.setItem('lastLoginTime', authInfo.lastLoginTime)
+        localStorage.setItem('avatarPath', 'static/img/' + authInfo.avatarPath)
+        // 9+4 共13组在 localStorage 中的数据
+        resolve(true)
+      })
     },
     getPermission (permissionId) {
       return new Promise((resolve, reject) => {

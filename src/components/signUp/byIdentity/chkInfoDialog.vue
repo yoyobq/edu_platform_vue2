@@ -33,7 +33,7 @@ export default {
         'idNumber': chkedInfo.证件号码
       }
       this.$api.get('stuInfos', data, res => {
-        console.log(res[0].id)
+        // console.log(res[0].id)
         this.$message({
           type: 'info',
           message: '该学生已注册（ id:' + res[0].id + ' ），若不是本人注册，请及时联系管理员'

@@ -42,6 +42,7 @@ function apiAxios (method, url, params, success, failure) {
     // 上一条是以前的注释，有严重的错误，作为学习进度的记录保留，重新解释如下
     // params会被处理成 url?aaa=xxx&bbb=ooo  这样的形式，目标后台(eggjs为例)可以通过 ctx.query 获取
     // data会被处理成无法直接观测到的 POST 形式提交，目标后台（eggjs为例）可以通过  ctx.request.body 获取
+    // 此处有个特列需注意就是关于PUT的处理，根据eggjs RESTful的规定data,params都有，尚未处理待改进
     data: method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE' ? params : null,
     params: method === 'GET' ? params : null,
     baseURL: root,

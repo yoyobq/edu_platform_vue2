@@ -2,7 +2,7 @@
     <div class="">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-message"></i> Messages</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-message"></i> 站内消息</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -64,22 +64,18 @@
             title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
           }, {
             date: '2018-04-19 21:00:00',
-            title: '今晚12点整发大红包，先到先得'
+            title: '期末考试即将到来，请做好复习迎考准备'
           }],
           read: [{
             date: '2018-04-19 20:00:00',
-            title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
+            title: '系统上线啦'
           }]
         }
       },
       created () {
-        if (this.permission === undefined) {
-          this.$router.push('/personal')
-        } else {
-          this.getMessages('read')
-          this.getMessages('unread')
-          this.getMessages()
-        }
+        this.getMessages('read')
+        this.getMessages('unread')
+        this.getMessages()
       },
       methods: {
         handleRead (index) {
