@@ -63,7 +63,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 .el-radio-group {
   display: inline-block;
   max-width: 85%;
