@@ -4,6 +4,7 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -15,7 +16,7 @@ module.exports = {
   //   app: './src/main.js'
   // },
   entry: {
-    app: ['babel-polyfill', './src/main.js']
+    app: ['@babel/polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
@@ -48,14 +49,15 @@ module.exports = {
         loader: 'vue-loader',
         options: vueLoaderConfig
       },
+      // 这段在很多教程中都谈到需要加入
+      // 经过将近一周的纠结发现这段其实不需要
+      // 因为vue-cli将css相关的loader交给了utils.js
       // {
       //   test: /\.css$/,
       //   use: [
-      //     'vue-style-loader',
-      //     {
-      //       loader: 'css-loader',
-      //       options: { importLoaders: 1 }
-      //     },
+      //     // process.env.NODE_ENV !== 'production'
+      //     //   ? 'vue-style-loader'
+      //     // : MiniCssExtractPlugin.loader,
       //     'postcss-loader'
       //   ]
       // },

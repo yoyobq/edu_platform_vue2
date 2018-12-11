@@ -6,7 +6,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css' // 默认主题
 // import '../static/css/theme-green/index.css'; // 浅绿色主题
 import 'font-awesome/css/font-awesome.css'
-import 'babel-polyfill' // ie8兼容
+import '@babel/polyfill' // ie8兼容
 // import apiv1 from './api/v1.js'
 import apiv2 from './api/v2.js'
 import mjson from './api/mjson.js'

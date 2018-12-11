@@ -1,4 +1,6 @@
 // 本文件注释引自网络，注意甄别 https://www.cnblogs.com/ye-hcj/p/7078047.html
+// 此配置文件是vue开发环境的wepack相关配置文件，
+// 主要用来处理css-loader，vue-style-loader，postcss-loader
 'use strict'
 // 引入nodejs路径模块
 const path = require('path')
@@ -28,35 +30,31 @@ exports.assetsPath = function (_path) {
 // 是导出cssLoaders的相关配置
 exports.cssLoaders = function (options) {
   options = options || {}
-
+  
+  // CSS Modules 必须通过向 css-loader 传入 modules: true 来开启
   const cssLoader = {
     loader: 'css-loader',
     options: {
+      // modules: true,
       // 若是生产环境，压缩CSS代码
-      minimize: process.env.NODE_ENV === 'production',
+      // minimize: process.env.NODE_ENV === 'production',
       sourceMap: options.sourceMap
     }
   }
 
-  // const postcssLoader = {
-  //   loader: 'postcss-loader',
-  //   options: {
-  //     sourceMap: options.sourceMap
-  //   }
-  // }
+  const postcssLoader = {
+    loader: 'postcss-loader',
+    options: {
+      sourceMap: options.sourceMap
+    }
+  }
 
-  // const cssLoader = {
-  //   loader: 'vue-loader',
-  //   options: {
-  //     sourceMap: options.sourceMap
-  //   }
-  // }
 
   // generate loader string to be used with extract text plugin
   function generateLoaders (loader, loaderOptions) {
     // 如果该函数传递了单独的loader就加到这个loaders数组里面，这个loader可能是less,sass之类的
     // const loaders = options.usePostCSS ? [cssLoader, postcssLoader] : [cssLoader]
-    const loaders = [cssLoader]
+    const loaders = [cssLoader, postcssLoader]
 
     if (loader) {
       loaders.push({
@@ -68,6 +66,8 @@ exports.cssLoaders = function (options) {
     }
 
     // webpack4 ++
+    // 此处的意义是，开发环境中无论loader如何配置，都会默认加载vue-style-loader，
+    // 生产环境中，由于引入了 MiniCssExtract 与 vsl 冲突，默认不加载vsl
     return [
       options.extract ? MiniCssExtractPlugin.loader : 'vue-style-loader',
     ].concat(loaders)
@@ -99,6 +99,7 @@ exports.cssLoaders = function (options) {
 
 // Generate loaders for standalone style files (outside of .vue)
 exports.styleLoaders = function (options) {
+  console.log(options)
   const output = []
   const loaders = exports.cssLoaders(options)
 
